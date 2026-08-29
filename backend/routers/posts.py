@@ -225,13 +225,15 @@ async def create_post(
     db.add(incident)
     db.commit()
 
-    # Route and confidence rating logic based on source & similarity checks
-    ai_confidence = 75
-    ai_urgency = "LOW"
-    ai_class = "UNDER_REVIEW"
-    ai_summary = "No summary provided."
-    ai_topic = post.category
-    ai_reason = "Evaluated by Sentinel Media engine."
+    # Trigger automatic AI analysis for ALL posts so Qwen always evaluates user content
+    ai_result = analyze_message(post.content)
+    
+    ai_confidence = ai_result.get("confidence", 75)
+    ai_urgency = ai_result.get("urgency", "LOW")
+    ai_class = ai_result.get("classification", "UNDER_REVIEW")
+    ai_summary = ai_result.get("summary", "No summary provided.")
+    ai_topic = ai_result.get("topic", post.category)
+    ai_reason = ai_result.get("reason", "Evaluated by Sentinel Media engine.")
     
     media_dept = db.query(Department).filter(Department.code == "MEDIA").first()
     media_dept_id = media_dept.id if media_dept else None
@@ -241,7 +243,7 @@ async def create_post(
         ai_confidence = 96
         ai_urgency = "HIGH"
         ai_class = "VERIFIED"
-        ai_summary = f"Official media report published by verified source: {post.news_source}."
+        ai_summary = f"Official media report published by verified source: {post.news_source}. Summary: {ai_summary}"
         
         # Route to Media Verification Bureau
         post.department_id = media_dept_id
@@ -273,9 +275,9 @@ async def create_post(
                 post.status = "SIMILAR_TO_EVENT"
                 post.department_id = media_dept_id
                 ai_class = "SIMILAR_TO_EVENT"
-                ai_confidence = matched_post.ai_analysis.confidence if matched_post.ai_analysis else 90
+                ai_confidence = max(ai_confidence, matched_post.ai_analysis.confidence if matched_post.ai_analysis else 90)
                 ai_urgency = matched_post.ai_analysis.urgency if matched_post.ai_analysis else "MEDIUM"
-                ai_summary = f"Civilian claim matching official news report: {matched_post.title}."
+                ai_summary = f"Citizen report matching official news report: {matched_post.title}. Analysis: {ai_summary}"
                 incident.status = "ROUTED"
                 incident.severity = ai_urgency
             else:
@@ -297,26 +299,17 @@ async def create_post(
                 post.status = "SIMILAR_TO_EVENT"
                 post.department_id = matched_post.department_id
                 ai_class = "SIMILAR_TO_EVENT"
-                ai_confidence = 80
-                ai_urgency = "MEDIUM"
-                ai_summary = f"Citizen report matching active duplicate claim: {matched_post.title}."
+                ai_summary = f"Citizen report matching active duplicate claim: {matched_post.title}. Analysis: {ai_summary}"
                 incident.status = "ROUTED"
-                incident.severity = ai_urgency
+                incident.severity = matched_post.incident.severity if matched_post.incident else "MEDIUM"
         else:
-            # Fully new civilian claim -> Run standard AI analysis
-            ai_result = analyze_message(post.content)
+            # Fully new civilian claim -> Route to department recommended by Qwen
             dept_name = ai_result.get("recommended_department", "Other Departments")
             department = db.query(Department).filter(Department.name == dept_name).first()
             if not department:
                 department = db.query(Department).filter(Department.code == "OTHER").first()
                 
             post.department_id = department.id if department else None
-            ai_class = ai_result.get("classification", "UNDER_REVIEW")
-            ai_urgency = ai_result.get("urgency", "LOW")
-            ai_confidence = ai_result.get("confidence", 75)
-            ai_summary = ai_result.get("summary", "No summary provided.")
-            ai_topic = ai_result.get("topic", "General")
-            ai_reason = ai_result.get("reason", "No reason provided.")
             
             if ai_urgency == "CRITICAL":
                 incident.severity = "CRITICAL"
