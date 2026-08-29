@@ -77,6 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
             API.auth.logout();
         });
     }
+
+    // 4. Apply i18n translations
+    if (window.applyTranslations && window.currentLang) {
+        window.applyTranslations(window.currentLang);
+    }
 });
 
 // Render general loading skeleton

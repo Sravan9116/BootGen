@@ -6,6 +6,22 @@ from sqlalchemy.orm import Session
 import os
 import json
 
+# Load environment variables from .env in project root if present
+dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
+if os.path.exists(dotenv_path):
+    with open(dotenv_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split("=", 1)
+            if len(parts) == 2:
+                key = parts[0].strip()
+                val = parts[1].strip()
+                if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
+                    val = val[1:-1]
+                os.environ[key] = val
+
 from backend.database import engine, Base, get_db, SessionLocal
 from backend.models import User, Department, Post, Message, AiAnalysis, Verification, Incident, AuditLog
 from backend.routers import auth, posts, departments, alerts, analysis
@@ -149,18 +165,25 @@ def seed_database():
             depts[code] = dept
 
         # 2. Seed Users
+        test_phone_env = os.getenv("TEST_RECIPIENT_PHONE", "+917901013355")
+        test_phones = [p.strip() for p in test_phone_env.split(",") if p.strip()]
+        test_phone = test_phones[0] if test_phones else "+917901013355"
         users_data = [
-            ("civilian_user", "civilian@sentinel.gov", "password", "USER", None),
-            ("admin_coordinator", "admin@sentinel.gov", "admin", "ADMIN", None),
-            ("water_officer", "water@sentinel.gov", "water", "STAFF", depts["WATER"].id),
-            ("traffic_officer", "traffic@sentinel.gov", "traffic", "STAFF", depts["TRAFFIC"].id),
-            ("weather_officer", "weather@sentinel.gov", "weather", "STAFF", depts["WEATHER"].id),
-            ("disaster_officer", "disaster@sentinel.gov", "disaster", "STAFF", depts["DISASTER"].id)
+            ("civilian_user", "civilian@sentinel.gov", "password", "USER", None, test_phone),
+            ("admin_coordinator", "admin@sentinel.gov", "admin", "ADMIN", None, test_phone),
+            ("water_officer", "water@sentinel.gov", "water", "STAFF", depts["WATER"].id, None),
+            ("traffic_officer", "traffic@sentinel.gov", "traffic", "STAFF", depts["TRAFFIC"].id, None),
+            ("weather_officer", "weather@sentinel.gov", "weather", "STAFF", depts["WEATHER"].id, None),
+            ("disaster_officer", "disaster@sentinel.gov", "disaster", "STAFF", depts["DISASTER"].id, None),
+            ("alert_recipient_1", "recipient1@sentinel.gov", "password", "USER", None, "+916301809962"),
+            ("alert_recipient_2", "recipient2@sentinel.gov", "password", "USER", None, "+916309592888"),
+            ("alert_recipient_3", "recipient3@sentinel.gov", "password", "USER", None, "+919342695448"),
+            ("alert_recipient_4", "recipient4@sentinel.gov", "password", "USER", None, "+919489902006")
         ]
         
         users = []
-        for username, email, pwd, role, dept_id in users_data:
-            user = User(username=username, email=email, password_hash=pwd, role=role, department_id=dept_id)
+        for username, email, pwd, role, dept_id, phone in users_data:
+            user = User(username=username, email=email, password_hash=pwd, role=role, department_id=dept_id, phone=phone)
             db.add(user)
             db.flush()
             users.append(user)

@@ -1,0 +1,453 @@
+// SENTINEL Multilingual Localization Support (i18n)
+// Exposes translation functions and dynamically injects language dropdown selector.
+
+const SENTINEL_TRANSLATIONS = {
+    en: {
+        "world_feed": "📰 World Feed",
+        "world_chat": "💬 World Chat",
+        "my_dashboard": "📊 My Dashboard",
+        "report_incident": "✍️ Report Incident",
+        "fact_checker": "🔍 Fact Checker",
+        "government_portal": "🏛️ Government Admin Portal",
+        "citizen_account": "Citizen Account",
+        "control_room": "🎛️ Control Room",
+        "verification_room": "🔍 Verification Room",
+        "department_board": "📋 Department Board",
+        "alert_dispatch": "🚨 Alert Dispatch",
+        "emergency_map": "🗺️ Emergency Map",
+        "logout": "🚪 Logout",
+        
+        "cta_title": "Secure Your Community Today",
+        "cta_desc": "Access real-time feeds, report incidents, and stay informed with official government-backed truth. Stop rumors. Stop chaos.",
+        "enter_platform": "Enter Platform",
+        "landing_subtitle": "Real-Time Government Verified Social Intelligence Platform",
+        "stat_ai_time": "AI Ingestion Time",
+        "stat_routing_acc": "Routing Accuracy",
+        "stat_alerts_disp": "Alerts Dispatched",
+        "stat_verified_auth": "Verified Authenticity",
+        
+        "login_title": "Official Access Portal",
+        "login_desc": "Secure authentication for authorized disaster coordinators and verification officers.",
+        "email_label": "Email Address",
+        "password_label": "Password",
+        "signin_btn": "Sign In to Command",
+        
+        "share_claim_title": "Share a Claim or Incident Report",
+        "post_report_btn": "Post Report",
+        "ollama_active": "Ollama Cloud Engine: Active",
+        "feed_subtitle": "Real-time crowdsourced reports and official clarifications.",
+        "filter_category": "Filter by Category",
+        "all_categories": "All Categories",
+        
+        "report_submit_title": "Submit an Incident Report",
+        "report_details_title": "Report Details",
+        "incident_title_label": "Incident Title",
+        "category_label": "Category",
+        "location_label": "Location / Region",
+        "severity_label": "Severity Level",
+        "description_label": "Describe the Incident",
+        "submit_report_btn": "Submit Official Report",
+        
+        "factcheck_title": "Official Truth vs Rumor Index",
+        "factcheck_desc": "Verify community statements, check official clarifications, and view authenticity tags.",
+        "search_placeholder": "Search Rumors or Topics",
+        
+        "alert_dispatch_title": "Targeted Alert Dispatch",
+        "dispatch_title": "Dispatch Geo-Targeted Emergency Alerts",
+        "radius_label": "Radius (km)",
+        "warning_msg_label": "Warning Message",
+        "channels_label": "Select Channels",
+        "fire_alert_btn": "FIRE GEO-TARGETED ALERT"
+    },
+    hi: {
+        "world_feed": "📰 विश्व फ़ीड",
+        "world_chat": "💬 विश्व चैट",
+        "my_dashboard": "📊 मेरा डैशबोर्ड",
+        "report_incident": "✍️ घटना की रिपोर्ट करें",
+        "fact_checker": "🔍 तथ्य जाँचकर्ता",
+        "government_portal": "🏛️ सरकारी एडमिन पोर्टल",
+        "citizen_account": "नागरिक खाता",
+        "control_room": "🎛️ नियंत्रण कक्ष",
+        "verification_room": "🔍 सत्यापन कक्ष",
+        "department_board": "📋 विभाग बोर्ड",
+        "alert_dispatch": "🚨 अलर्ट प्रेषण",
+        "emergency_map": "🗺️ आपातकालीन मानचित्र",
+        "logout": "🚪 लॉगआउट",
+        
+        "cta_title": "आज ही अपने समुदाय को सुरक्षित करें",
+        "cta_desc": "वास्तविक समय के फ़ीड तक पहुँचें, घटनाओं की रिपोर्ट करें और आधिकारिक सरकारी-समर्थित सत्य के साथ सूचित रहें। अफवाहें रोकें। अराजकता रोकें।",
+        "enter_platform": "प्लेटफ़ॉर्म में प्रवेश करें",
+        "landing_subtitle": "वास्तविक समय सरकारी सत्यापित सामाजिक खुफिया प्लेटफ़ॉर्म",
+        "stat_ai_time": "एआई अंतर्ग्रहण समय",
+        "stat_routing_acc": "रूटिंग सटीकता",
+        "stat_alerts_disp": "प्रेषित अलर्ट",
+        "stat_verified_auth": "सत्यापित प्रामाणिकता",
+        
+        "login_title": "आधिकारिक पहुँच पोर्टल",
+        "login_desc": "अधिकृत आपदा समन्वयकों और सत्यापन अधिकारियों के लिए सुरक्षित प्रमाणीकरण।",
+        "email_label": "ईमेल पता",
+        "password_label": "पासवर्ड",
+        "signin_btn": "कमांड में लॉग इन करें",
+        
+        "share_claim_title": "दावा या घटना रिपोर्ट साझा करें",
+        "post_report_btn": "रिपोर्ट पोस्ट करें",
+        "ollama_active": "ओलामा क्लाउड इंजन: सक्रिय",
+        "feed_subtitle": "वास्तविक समय के क्राउडसोर्स किए गए रिपोर्ट और आधिकारिक स्पष्टीकरण।",
+        "filter_category": "श्रेणी के अनुसार फ़िल्टर करें",
+        "all_categories": "सभी श्रेणियां",
+        
+        "report_submit_title": "घटना की रिपोर्ट सबमिट करें",
+        "report_details_title": "रिपोर्ट विवरण",
+        "incident_title_label": "घटना का शीर्षक",
+        "category_label": "श्रेणी",
+        "location_label": "स्थान / क्षेत्र",
+        "severity_label": "गंभीरता स्तर",
+        "description_label": "घटना का वर्णन करें",
+        "submit_report_btn": "आधिकारिक रिपोर्ट सबमिट करें",
+        
+        "factcheck_title": "आधिकारिक सत्य बनाम अफवाह सूचकांक",
+        "factcheck_desc": "सामुदायिक बयानों को सत्यापित करें, आधिकारिक स्पष्टीकरण देखें और प्रामाणिकता टैग देखें।",
+        "search_placeholder": "अफवाहें या विषय खोजें",
+        
+        "alert_dispatch_title": "लक्षित अलर्ट प्रेषण",
+        "dispatch_title": "भू-लक्षित आपातकालीन अलर्ट भेजें",
+        "radius_label": "त्रिज्या (किमी)",
+        "warning_msg_label": "चेतावनी संदेश",
+        "channels_label": "चैनलों का चयन करें",
+        "fire_alert_btn": "भू-लक्षित अलर्ट भेजें"
+    },
+    te: {
+        "world_feed": "📰 ప్రపంచ ఫీడ్",
+        "world_chat": "💬 ప్రపంచ చాట్",
+        "my_dashboard": "📊 నా డాష్‌బోర్డ్",
+        "report_incident": "✍️ సంఘటనను నివేదించండి",
+        "fact_checker": "🔍 ఫాక్ట్ చెకర్",
+        "government_portal": "🏛️ ప్రభుత్వ అడ్మిన్ పోర్టల్",
+        "citizen_account": "పౌర ఖాతా",
+        "control_room": "🎛️ నియంత్రణ గది",
+        "verification_room": "🔍 ధృవీకరణ గది",
+        "department_board": "📋 విభాగం బోర్డు",
+        "alert_dispatch": "🚨 అలర్ట్ డిస్పాచ్",
+        "emergency_map": "🗺️ అత్యవసర పటం",
+        "logout": "🚪 లాగ్ అవుట్",
+        
+        "cta_title": "ఈరోజే మీ సమాజాన్ని సురక్షితం చేసుకోండి",
+        "cta_desc": "నిజ-సమయ ఫీడ్‌లను యాక్సెస్ చేయండి, సంఘటనలను నివేదించండి మరియు అధికారిక ప్రభుత్వ సత్యంతో సమాచారం పొందండి. అపోహలను ఆపండి. గందరగోళాన్ని నివారించండి.",
+        "enter_platform": "ప్లాట్‌ఫారమ్‌లోకి ప్రవేశించండి",
+        "landing_subtitle": "నిజ-సమయ ప్రభుత్వ ధృవీకృత సామాజిక ఇంటెలిజెన్స్ ప్లాట్‌ఫారమ్",
+        "stat_ai_time": "AI ఇన్‌జెషన్ సమయం",
+        "stat_routing_acc": "रౌటింగ్ ఖచ్చితత్వం",
+        "stat_alerts_disp": "పంపిణీ చేసిన అలర్ట్లు",
+        "stat_verified_auth": "ధృవీకరించబడిన ప్రామాణికత",
+        
+        "login_title": "అధికారిక యాక్సెస్ పోర్టల్",
+        "login_desc": "అధికారిక విపత్తు సమన్വయకర్తలు మరియు ధృవీకరణ అధికారుల కోసం సురక్షిత లాగిన్.",
+        "email_label": "ఇమెయిల్ చిరునామా",
+        "password_label": "పాస్‌వర్డ్",
+        "signin_btn": "కమాండ్‌లోకి లాగిన్ అవ్వండి",
+        
+        "share_claim_title": "క్లెయిమ్ లేదా సంఘటన నివేదికను పంచుకోండి",
+        "post_report_btn": "నివేదికను పోస్ట్ చేయి",
+        "ollama_active": "ఓల్లామా క్లൗడ్ ఇంజిన్: యాക്టివ్",
+        "feed_subtitle": "రియల్ టైమ్ క్రౌడ్‌సోర్స్డ్ నివేదికలు మరియు అధికారిక వివరణలు.",
+        "filter_category": "వర్గం ద్వారా ఫిల్టర్ చేయండి",
+        "all_categories": "అన్ని వర్గాలు",
+        
+        "report_submit_title": "సంఘటన నిവേదికను సమర్పించండి",
+        "report_details_title": "నివేదిక వివరాలు",
+        "incident_title_label": "సంఘటన శీర్షిక",
+        "category_label": "వర్గం",
+        "location_label": "స్థానము / ప్రాంతం",
+        "severity_label": "తీవ్రత స్థాయి",
+        "description_label": "సంఘటనను వివరించండి",
+        "submit_report_btn": "అధికారిక నిവേదికను సమర్పించండి",
+        
+        "factcheck_title": "అధికారిక నిజం వర్సెస్ అపోహల సూచిక",
+        "factcheck_desc": "కమ్యూనిటీ ప్రకటనలను ధൃవీకరించండి, అధికారిక వివరణలను మరియు ప్రాമാణికత ట్యాగ్‌లను తనిഖీ చేయండి.",
+        "search_placeholder": "అపోహలు లేదా అంశాల కోసం వెతకండి",
+        
+        "alert_dispatch_title": "లక్ష్యిత అలర్ట్ డిస్పాచ్",
+        "dispatch_title": "భౌగోళిక లక్ష్యిత అత్యవసర అలర్ట్‌లను పంపండి",
+        "radius_label": "వ్యాసార్థం (కిమీ)",
+        "warning_msg_label": "హెచ్చరిక సందేశం",
+        "channels_label": "ఛానెల్‌లను ఎంచుకోండి",
+        "fire_alert_btn": "లక్ష్యిత అలర్ట్‌ను పంపండి"
+    },
+    ta: {
+        "world_feed": "📰 உலக ஊட்டம்",
+        "world_chat": "💬 உலக அரட்டை",
+        "my_dashboard": "📊 என் டாஷ்போர்டு",
+        "report_incident": "✍️ சம்பவத்தைப் புகாரளி",
+        "fact_checker": "🔍 உண்மை சரிபார்ப்பாளர்",
+        "government_portal": "🏛️ அரசு நிர்வாக போர்டல்",
+        "citizen_account": "குடிமகன் கணக்கு",
+        "control_room": "🎛️ கட்டுப்பாட்டு அறை",
+        "verification_room": "🔍 சரிபார்ப்பு அறை",
+        "department_board": "📋 துறை வாரியம்",
+        "alert_dispatch": "🚨 எச்சரிக்கை அனுப்புதல்",
+        "emergency_map": "🗺️ அவசர வரைபடம்",
+        "logout": "🚪 logout",
+        
+        "cta_title": "இன்று உங்கள் சமூகத்தைப் பாதுகாக்கவும்",
+        "cta_desc": "உண்மையான நேர ஊடகம், சம்பவங்களை புகாரளித்தல் மற்றும் அரசாங்கத்தின் அதிகாரப்பூர்വ உண்மையுடன் தகவலறிந்து இருங்கள். வதந்திகளை நிறுத்துங்கள். குழப்பங்களைத் தவிர்க்கவும்.",
+        "enter_platform": "தளத்திற்குள் நுழையவும்",
+        "landing_subtitle": "உண்மையான நேர அரசாங்கத்தால் சரிபார்க்கப்பட்ட சமூக புலனாய்வு தளம்",
+        "stat_ai_time": "AI உദ്ധானம் நேரம்",
+        "stat_routing_acc": "ரூட்டிங் துல்லியம்",
+        "stat_alerts_disp": "அனுப்பப்பட்ட எச்சரிக்கைகள்",
+        "stat_verified_auth": "சரிபார்க்கப்பட்ட நம்பகத்தன்மை",
+        
+        "login_title": "அதிகாரப்பூர்வ அணுகல் போர்டல்",
+        "login_desc": "அங்கீகரிக்கப்பட்ட பேരിடர் ஒருங்கிணைப்பாளர்கள் மற்றும் சரிபார்ப்பு அதிகாரிகளுக்கான பாதுகாப்பான உள்நுழைவு.",
+        "email_label": "மின்னஞ்சல் முகவரி",
+        "password_label": "கடவுச்சൊൽ",
+        "signin_btn": "உள்நுழையவும்",
+        
+        "share_claim_title": "ஒரு கூற்று அல்லது சம்பவ அறிக்கையைப் பகிரவும்",
+        "post_report_btn": "பதிவிடவும்",
+        "ollama_active": "Ollama கிளவுட் என்ஜின்: செயலில் உள்ளது",
+        "feed_subtitle": "உண்மையான நேர கூட்ட ஆதார அறிக்கைகள் மற்றும் அதிகாரப்பூர்வ விளக்கங்கள்.",
+        "filter_category": "வகை வாரியாக வடிகட்டவும்",
+        "all_categories": "அனைத்து பிரிவுகள்",
+        
+        "report_submit_title": "சம்பவ அறிக்கையைச் சமர்ப்பிக்கவும்",
+        "report_details_title": "அறிக்கை விவரங்கள்",
+        "incident_title_label": "சம்பவத் தலைப்பு",
+        "category_label": "வகை",
+        "location_label": "இருப்பிடம் / பகுதி",
+        "severity_label": "தீவிரத்தன்மை நிலை",
+        "description_label": "சம்பவத்தை விவரிக்கவும்",
+        "submit_report_btn": "அறிக்கையைச் സമர்ப்பிக்கவும்",
+        
+        "factcheck_title": "அதிகாரப்பூர்வ உண்மை vs வதந்தி குறியீடு",
+        "factcheck_desc": "சமூக அறிக்கைகளைச் சரிபார்க்கவும், அதிகாரப்பூர்வ விளக்கங்கள் மற்றும் நம்பகத்தன்மை குறிச்சൊற்களைக் കാണുക.",
+        "search_placeholder": "வதந்திகள் அல்லது தலைப்புகளைத் தேடுங்கள்",
+        
+        "alert_dispatch_title": "இலக்கு எச்சரிக்கை அனுப்புதல்",
+        "dispatch_title": "புவியியல் இலக்கு அவசர எச்சரிக்கைகளை அனுப்பவும்",
+        "radius_label": "ஆரம் (கிமீ)",
+        "warning_msg_label": "எச்சரிக்கை செய்தி",
+        "channels_label": "சேனல்களைத் தேர்ந்தெடுக்கவும்",
+        "fire_alert_btn": "புவி-இலக்கு எச்சரிக்கையை அனுப்பவும்"
+    },
+    ml: {
+        "world_feed": "📰 വേൾഡ് ഫീഡ്",
+        "world_chat": "💬 വേൾഡ് ചാറ്റ്",
+        "my_dashboard": "📊 എന്റെ ഡാഷ്ബോർഡ്",
+        "report_incident": "✍️ അപകടം റിപ്പോർട്ട് ചെയ്യുക",
+        "fact_checker": "🔍 ഫാക്റ്റ് ചെക്കർ",
+        "government_portal": "🏛️ ഗവൺമെന്റ് അഡ്മിൻ പോർട്ടൽ",
+        "citizen_account": "സിറ്റിസൺ അക്കൗണ്ട്",
+        "control_room": "🎛️ നിയന്ത്രണ മുറി",
+        "verification_room": "🔍 വെരിഫിക്കേഷൻ റൂം",
+        "department_board": "📋 വകുപ്പ് ബോർഡ്",
+        "alert_dispatch": "🚨 അലേർട്ട് ഡിസ്പാച്ച്",
+        "emergency_map": "🗺️ അടിയന്തര മാപ്പ്",
+        "logout": "🚪 ലോഗ് ഔട്ട്",
+        
+        "cta_title": "ഇന്ന് നിങ്ങളുടെ സമൂഹത്തെ സുരക്ഷിതമാക്കൂ",
+        "cta_desc": "തത്സമയ വിവരങ്ങൾ ലഭ്യമാക്കുക, അപകടങ്ങൾ റിപ്പോർട്ട് ചെയ്യുക, ഔദ്യോഗിക ഗവൺമെന്റ് വെരിഫൈഡ് വിവരങ്ങൾ മനസ്സിലാക്കുക. വ്യാജവാർത്തകൾ തടയുക.",
+        "enter_platform": "പ്ലാറ്റ്‌ഫോമിൽ പ്രവേശിക്കുക",
+        "landing_subtitle": "തത്സമയ ഗവൺമെന്റ് വെരിഫൈഡ് സോഷ്യൽ ഇന്റലിജൻസ് പ്ലാറ്റ്‌ഫോം",
+        "stat_ai_time": "AI പ്രോസസിംഗ് സമയം",
+        "stat_routing_acc": "റൂട്ടിംഗ് കൃത്യത",
+        "stat_alerts_disp": "അയച്ച അലേർട്ടുകൾ",
+        "stat_verified_auth": "ഉറപ്പുവരുത്തിയ ആധികാരികത",
+        
+        "login_title": "ഔദ്യോഗിക ലോഗിൻ പോർട്ടൽ",
+        "login_desc": "അധികാരപ്പെടുത്തിയ ദുരന്ത നിവാരണ കോർഡിനേറ്റർമാർക്കും വെരിഫിക്കേഷൻ ഓഫീസർമാർക്കുമുള്ള സുരക്ഷിത ലോഗിൻ.",
+        "email_label": "ഇമെയിൽ വിലാസം",
+        "password_label": "പാസ്‌വേഡ്",
+        "signin_btn": "ലോഗിൻ ചെയ്യുക",
+        
+        "share_claim_title": "ഒരു ക്ലെയിം അല്ലെങ്കിൽ സംഭവ റിപ്പോർട്ട് പങ്കിടുക",
+        "post_report_btn": "റിപ്പോർട്ട് പോസ്റ്റ് ചെയ്യുക",
+        "ollama_active": "Ollama ക്ലൗഡ് എഞ്ചിൻ: ആക്റ്റീവ്",
+        "feed_subtitle": "തത്സമയ ക്രൗഡ് സോഴ്സ്ഡ് റിപ്പോർട്ടുകളും ഔദ്യോഗിക വിശദീകരണങ്ങളും.",
+        "filter_category": "വിഭാഗം അനുസരിച്ച് ഫിൽട്ടർ ചെയ്യുക",
+        "all_categories": "എല്ലാ വിഭാഗങ്ങളും",
+        
+        "report_submit_title": "അപകട റിപ്പോർട്ട് സമർപ്പിക്കുക",
+        "report_details_title": "റിപ്പോർട്ട് വിവരങ്ങൾ",
+        "incident_title_label": "സംഭവത്തിന്റെ വിഷയം",
+        "category_label": "വിഭാഗം",
+        "location_label": "സ്ഥലം / മേഖല",
+        "severity_label": "തീവ്രത നില",
+        "description_label": "സംഭവം വിവരിക്കുക",
+        "submit_report_btn": "ഔദ്യോഗിക റിപ്പോർട്ട് സമർപ്പിക്കുക",
+        
+        "factcheck_title": "ഔദ്യോഗിക സത്യം വേഴ്സസ് വ്യാജവാർത്താ സൂചിക",
+        "factcheck_desc": "കമ്മ്യൂണിറ്റി പ്രസ്താവനകൾ പരിശോധിക്കുക, ഔദ്യോഗിക വിശദീകരണങ്ങളും ആധികാരികത ടാഗുകളും കാണുക.",
+        "search_placeholder": "വ്യാജവാർത്തകളോ വിഷയങ്ങളോ തിരയുക",
+        
+        "alert_dispatch_title": "ലക്ഷ്യമിട്ടുള്ള അലേർട്ട് ഡിസ്പാച്ച്",
+        "dispatch_title": "ഭൂമിശാസ്ത്രപരമായി ലക്ഷ്യമിട്ടുള്ള അടിയന്തര അലേർട്ടുകൾ അയയ്ക്കുക",
+        "radius_label": "വ്യാസാർദ്ധം (കിമീ)",
+        "warning_msg_label": "മുന്നറിയിപ്പ് സന്ദേശം",
+        "channels_label": "ചാനലുകൾ തിരഞ്ഞെടുക്കുക",
+        "fire_alert_btn": "അലേർട്ട് അയയ്ക്കുക"
+    }
+};
+
+const UI_TEXT_MAP = {
+    "World Feed": "world_feed",
+    "World Chat": "world_chat",
+    "My Dashboard": "my_dashboard",
+    "Report Incident": "report_incident",
+    "Fact Checker": "fact_checker",
+    "Government Admin Portal": "government_portal",
+    "Citizen Account": "citizen_account",
+    "Control Room": "control_room",
+    "Verification Room": "verification_room",
+    "Department Board": "department_board",
+    "Alert Dispatch": "alert_dispatch",
+    "Emergency Map": "emergency_map",
+    "Logout": "logout",
+    
+    // Landing page
+    "Secure Your Community Today": "cta_title",
+    "Access real-time feeds, report incidents, and stay informed with official government-backed truth. Stop rumors. Stop chaos.": "cta_desc",
+    "Enter Platform": "enter_platform",
+    "Real-Time Government Verified Social Intelligence Platform": "landing_subtitle",
+    "AI Ingestion Time": "stat_ai_time",
+    "Routing Accuracy": "stat_routing_acc",
+    "Alerts Dispatched": "stat_alerts_disp",
+    "Verified Authenticity": "stat_verified_auth",
+    
+    // Login
+    "Official Access Portal": "login_title",
+    "Secure authentication for authorized disaster coordinators and verification officers.": "login_desc",
+    "Email Address": "email_label",
+    "Password": "password_label",
+    "Sign In to Command": "signin_btn",
+    
+    // Feed
+    "Share a Claim or Incident Report": "share_claim_title",
+    "Post Report": "post_report_btn",
+    "Ollama Cloud Engine: Active": "ollama_active",
+    "Real-time crowdsourced reports and official clarifications.": "feed_subtitle",
+    "Filter by Category": "filter_category",
+    "All Categories": "all_categories",
+    
+    // Report
+    "Submit an Incident Report": "report_submit_title",
+    "Report Details": "report_details_title",
+    "Incident Title": "incident_title_label",
+    "Category": "category_label",
+    "Location / Region": "location_label",
+    "Severity Level": "severity_label",
+    "Describe the Incident": "description_label",
+    "Submit Official Report": "submit_report_btn",
+    
+    // Fact check
+    "Official Truth vs Rumor Index": "factcheck_title",
+    "Verify community statements, check official clarifications, and view authenticity tags.": "factcheck_desc",
+    "Search Rumors or Topics": "search_placeholder",
+    
+    // Alerts Builder
+    "Targeted Alert Dispatch": "alert_dispatch_title",
+    "Dispatch Geo-Targeted Emergency Alerts": "dispatch_title",
+    "Radius (km)": "radius_label",
+    "Warning Message": "warning_msg_label",
+    "Select Channels": "channels_label",
+    "FIRE GEO-TARGETED ALERT": "fire_alert_btn"
+};
+
+let currentLang = localStorage.getItem('sentinel_lang') || 'en';
+
+function applyTranslations(lang) {
+    // 1. Scan and replace standard elements containing static English text
+    const textNodes = [];
+    const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    let node;
+    while(node = walk.nextNode()) {
+        const parent = node.parentNode;
+        // Skip script tags, style tags, select options, and language switcher itself
+        if (parent && !['SCRIPT', 'STYLE', 'OPTION', 'SELECT'].includes(parent.tagName) && !parent.classList.contains('lang-switcher-select')) {
+            const text = node.nodeValue.trim();
+            if (UI_TEXT_MAP[text]) {
+                const translationKey = UI_TEXT_MAP[text];
+                if (SENTINEL_TRANSLATIONS[lang] && SENTINEL_TRANSLATIONS[lang][translationKey]) {
+                    node.nodeValue = SENTINEL_TRANSLATIONS[lang][translationKey];
+                }
+            } else {
+                for (let key in UI_TEXT_MAP) {
+                    if (text === key) {
+                        const translationKey = UI_TEXT_MAP[key];
+                        node.nodeValue = SENTINEL_TRANSLATIONS[lang][translationKey];
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // 2. Translate placeholders for forms
+    document.querySelectorAll('input, textarea').forEach(el => {
+        const placeholder = el.placeholder ? el.placeholder.trim() : '';
+        if (UI_TEXT_MAP[placeholder]) {
+            const translationKey = UI_TEXT_MAP[placeholder];
+            if (SENTINEL_TRANSLATIONS[lang] && SENTINEL_TRANSLATIONS[lang][translationKey]) {
+                el.placeholder = SENTINEL_TRANSLATIONS[lang][translationKey];
+            }
+        }
+    });
+}
+
+function injectLanguageSelector() {
+    const containers = document.querySelectorAll('.logo-container');
+    containers.forEach(container => {
+        if (container.querySelector('.lang-switcher-select')) return; // Avoid duplicate load
+
+        const select = document.createElement('select');
+        select.className = 'lang-switcher-select';
+        select.style.fontSize = '0.75rem';
+        select.style.padding = '0.2rem 0.4rem';
+        select.style.marginLeft = '1rem';
+        select.style.background = 'rgba(255,255,255,0.08)';
+        select.style.border = '1px solid rgba(255,255,255,0.15)';
+        select.style.borderRadius = 'var(--border-radius)';
+        select.style.color = '#ffffff';
+        select.style.cursor = 'pointer';
+        select.style.outline = 'none';
+
+        const languages = [
+            { code: 'en', name: '🌐 En' },
+            { code: 'hi', name: '🌐 हिं (Hi)' },
+            { code: 'te', name: '🌐 తె (Te)' },
+            { code: 'ta', name: '🌐 த (Ta)' },
+            { code: 'ml', name: '🌐 മ (Ml)' }
+        ];
+
+        languages.forEach(lang => {
+            const opt = document.createElement('option');
+            opt.value = lang.code;
+            opt.textContent = lang.name;
+            opt.style.background = '#0d1423';
+            opt.style.color = '#ffffff';
+            if (lang.code === currentLang) opt.selected = true;
+            select.appendChild(opt);
+        });
+
+        select.addEventListener('change', (e) => {
+            const newLang = e.target.value;
+            localStorage.setItem('sentinel_lang', newLang);
+            currentLang = newLang;
+            
+            document.querySelectorAll('.lang-switcher-select').forEach(sel => sel.value = newLang);
+            location.reload();
+        });
+
+        container.appendChild(select);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    injectLanguageSelector();
+    applyTranslations(currentLang);
+});
+
+window.applyTranslations = applyTranslations;
+window.currentLang = currentLang;
+window.SENTINEL_TRANSLATIONS = SENTINEL_TRANSLATIONS;
+window.UI_TEXT_MAP = UI_TEXT_MAP;

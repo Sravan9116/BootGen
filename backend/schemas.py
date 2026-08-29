@@ -17,6 +17,7 @@ class DepartmentResponse(DepartmentBase):
 class UserBase(BaseModel):
     username: str
     email: str
+    phone: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str

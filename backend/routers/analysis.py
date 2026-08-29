@@ -2,12 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, Header, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from backend.database import get_db
-from backend.models import Post, Verification, User, AuditLog, Notification, Department, Incident
+from backend.models import Post, Verification, User, AuditLog, Notification, Department, Incident, AiAnalysis
 from backend.schemas import PostResponse, VerificationResponse
 from backend.services.ollama_service import analyze_message
 from backend.services.websocket_manager import manager
+from backend.services.external_dispatch import send_whatsapp_message
 from typing import List, Optional
 import datetime
+import os
 
 router = APIRouter(prefix="/api", tags=["analysis"])
 
@@ -119,6 +121,23 @@ async def submit_verification(
         "department_name": post.department.name if post.department else "Government",
         "updated_at": verification.created_at.isoformat()
     })
+
+    author_phone = author.phone if (author and author.phone) else os.getenv("TEST_RECIPIENT_PHONE")
+    if author_phone:
+        author_phones = [p.strip() for p in author_phone.split(",") if p.strip()]
+        whatsapp_verif_msg = (
+            f"🔔 *[SENTINEL VERIFICATION UPDATE]*\n\n"
+            f"Your report *\"{post.title}\"* has been reviewed by the *{post.department.name if post.department else 'government'}*.\n\n"
+            f"• *Verdict Status:* {post.status}\n"
+            f"• *Official Clarification:*\n{verification_in.official_response}\n\n"
+            f"Thank you for helping keep our community safe."
+        )
+        for phone in author_phones:
+            try:
+                print(f"\n[WHATSAPP NOTIFICATION] Sending verification update to {phone}...")
+            except UnicodeEncodeError:
+                print(f"\n[WHATSAPP NOTIFICATION] Sending verification update to {phone} (Unicode warning)...")
+            send_whatsapp_message(whatsapp_verif_msg, phone)
 
     return post
 

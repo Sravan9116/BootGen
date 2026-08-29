@@ -23,7 +23,8 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
         email=user_in.email,
         password_hash=user_in.password, # For prototype, plain password check is sufficient
         role=user_in.role,
-        department_id=user_in.department_id
+        department_id=user_in.department_id,
+        phone=user_in.phone
     )
     db.add(new_user)
     db.commit()

@@ -12,6 +12,7 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     role = Column(String, nullable=False, default="USER") # USER, ADMIN, STAFF
     department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
+    phone = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     posts = relationship("Post", back_populates="user")
