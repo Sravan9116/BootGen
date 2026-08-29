@@ -3,7 +3,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Database URL
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./sentinel.db")
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    if os.environ.get("VERCEL") == "1":
+        DATABASE_URL = "sqlite:////tmp/sentinel.db"
+    else:
+        DATABASE_URL = "sqlite:///./sentinel.db"
 
 # Create engine. For SQLite, connect_args={"check_same_thread": False} is required
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
