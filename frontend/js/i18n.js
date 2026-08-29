@@ -57,7 +57,39 @@ const SENTINEL_TRANSLATIONS = {
         "radius_label": "Radius (km)",
         "warning_msg_label": "Warning Message",
         "channels_label": "Select Channels",
-        "fire_alert_btn": "FIRE GEO-TARGETED ALERT"
+        "fire_alert_btn": "FIRE GEO-TARGETED ALERT",
+        
+        // Critical alerts & Policy Sidebar Extensions
+        "critical_broadcasts_title": "🚨 Critical Broadcasts",
+        "trust_policy_title": "🛡️ Sentinel Trust Policy",
+        "trust_policy_desc_1": "Every claim undergoes instant **AI pre-classification** to determine urgency and route it to the respective government branch.",
+        "trust_policy_desc_2": "**Important:** AI marks are suggestions. Complete verification requires official department responses.",
+        "no_emergencies_msg": "No active critical emergencies.",
+        "location_prefix": "Location",
+        "alert_suffix": "ALERT",
+        "official_clarification_prefix": "Official Clarification",
+        "no_posts_msg": "No posts available on the feed.",
+        
+        // Departments & alert types
+        "water_department": "Water Department",
+        "traffic_department": "Traffic Department",
+        "weather_department": "Weather Department",
+        "disaster_management": "Disaster Management",
+        "police__public_safety": "Police / Public Safety",
+        "electricity_department": "Electricity Department",
+        "other_departments": "Other Departments",
+        "emergency": "Emergency",
+        "flood": "Flood",
+        "weather": "Weather",
+        "traffic": "Traffic",
+        "general": "General",
+        "emergency_alert_prefix": "EMERGENCY ALERT",
+        "target_prefix": "Target",
+        "public_claim_prefix": "Public Claim",
+        "status_update_suffix": "Status Update",
+        "pending_verification": "Pending verification review.",
+        "government_authority": "Government Authority",
+        "no_bulletins_msg": "No matching bulletins found."
     },
     hi: {
         "world_feed": "📰 विश्व फ़ीड",
@@ -114,7 +146,39 @@ const SENTINEL_TRANSLATIONS = {
         "radius_label": "त्रिज्या (किमी)",
         "warning_msg_label": "चेतावनी संदेश",
         "channels_label": "चैनलों का चयन करें",
-        "fire_alert_btn": "भू-लक्षित अलर्ट भेजें"
+        "fire_alert_btn": "भू-लक्षित अलर्ट भेजें",
+        
+        // Critical alerts & Policy Sidebar Extensions
+        "critical_broadcasts_title": "🚨 गंभीर प्रसारण",
+        "trust_policy_title": "🛡️ सेंटिनल ट्रस्ट नीति",
+        "trust_policy_desc_1": "हर दावे का तात्कालिक **एआई पूर्व-वर्गीकरण** होता है ताकि गंभीरता निर्धारित की जा सके और इसे संबंधित सरकारी विभाग को भेजा जा सके।",
+        "trust_policy_desc_2": "**महत्वपूर्ण:** एआई चिह्न केवल सुझाव हैं। पूर्ण सत्यापन के लिए आधिकारिक विभाग की प्रतिक्रियाएं आवश्यक हैं।",
+        "no_emergencies_msg": "कोई सक्रिय आपात स्थिति नहीं है।",
+        "location_prefix": "स्थान",
+        "alert_suffix": "चेतावनी",
+        "official_clarification_prefix": "आधिकारिक स्पष्टीकरण",
+        "no_posts_msg": "फ़ीड पर कोई पोस्ट उपलब्ध नहीं है।",
+        
+        // Departments & alert types
+        "water_department": "जल विभाग",
+        "traffic_department": "यातायात विभाग",
+        "weather_department": "मौसम विभाग",
+        "disaster_management": "आपदा प्रबंधन",
+        "police__public_safety": "पुलिस / सार्वजनिक सुरक्षा",
+        "electricity_department": "बिजली विभाग",
+        "other_departments": "अन्य विभाग",
+        "emergency": "आपातकाल",
+        "flood": "बाढ़",
+        "weather": "मौसम",
+        "traffic": "यातायात",
+        "general": "सामान्य",
+        "emergency_alert_prefix": "आपातकालीन चेतावनी",
+        "target_prefix": "लक्ष्य",
+        "public_claim_prefix": "सार्वजनिक दावा",
+        "status_update_suffix": "स्थिति अपडेट",
+        "pending_verification": "सत्यापन समीक्षा लंबित है।",
+        "government_authority": "सरकारी प्राधिकरण",
+        "no_bulletins_msg": "कोई मेल खाने वाला बुलेटिन नहीं मिला।"
     },
     te: {
         "world_feed": "📰 ప్రపంచ ఫీడ్",
@@ -171,7 +235,39 @@ const SENTINEL_TRANSLATIONS = {
         "radius_label": "వ్యాసార్థం (కిమీ)",
         "warning_msg_label": "హెచ్చరిక సందేశం",
         "channels_label": "ఛానెల్‌లను ఎంచుకోండి",
-        "fire_alert_btn": "లక్ష్యిత అలర్ట్‌ను పంపండి"
+        "fire_alert_btn": "లక్ష్యిత అలర్ట్‌ను పంపండి",
+        
+        // Critical alerts & Policy Sidebar Extensions
+        "critical_broadcasts_title": "🚨 క్లిష్టమైన ప్రసారాలు",
+        "trust_policy_title": "🛡️ సెంటినెల్ విశ్వసనీయ విధానం",
+        "trust_policy_desc_1": "ప్రతి నివేదిక అత్యవసర స్థాయిని గుర్తించడానికి మరియు సంబంధిత ప్రభుత్వ విభాగానికి పంపడానికి తక్షణమే **AI వర్గీకరణ** చేయబడుతుంది.",
+        "trust_policy_desc_2": "**ముఖ్య గమనిక:** AI గుర్తులు కేవలం సూచనలు మాత్రమే. పూర్తి ధృవీకరణకు అధికారిక శాఖ ప్రతిస్పందనలు తప్పనిసరి.",
+        "no_emergencies_msg": "క్రియాశీల అత్యవసర పరిస్థితులు ఏవీ లేవు.",
+        "location_prefix": "స్థానము",
+        "alert_suffix": "హెచ్చరిక",
+        "official_clarification_prefix": "అధికారిక వివరణ",
+        "no_posts_msg": "ఫీడ్‌లో పోస్ట్‌లు ఏవీ లేవు.",
+        
+        // Departments & alert types
+        "water_department": "నీటి శాఖ",
+        "traffic_department": "ట్రాఫిక్ శాఖ",
+        "weather_department": "వాతావరణ శాఖ",
+        "disaster_management": "విపత్తు నిర్వహణ",
+        "police__public_safety": "పోలీస్ / ప్రజా రక్షణ",
+        "electricity_department": "విద్యుత్ శాఖ",
+        "other_departments": "ఇతర విభాగాలు",
+        "emergency": "అత్యవసర పరిస్థితి",
+        "flood": "వరద",
+        "weather": "వాతావరణం",
+        "traffic": "ట్రాఫిక్",
+        "general": "సాధారణ",
+        "emergency_alert_prefix": "అత్యవసర హెచ్చరిక",
+        "target_prefix": "లక్ష్యం",
+        "public_claim_prefix": "ప్రజా నివేదిక",
+        "status_update_suffix": "స్థితి నవీకరణ",
+        "pending_verification": "ధృవీకరణ సమీక్ష పెండింగ్‌లో ఉంది.",
+        "government_authority": "ప్రభుత్వ అధికారం",
+        "no_bulletins_msg": "సరిపోలే బులెటిన్లు ఏవీ కనుగొనబడలేదు."
     },
     ta: {
         "world_feed": "📰 உலக ஊட்டம்",
@@ -228,7 +324,39 @@ const SENTINEL_TRANSLATIONS = {
         "radius_label": "ஆரம் (கிமீ)",
         "warning_msg_label": "எச்சரிக்கை செய்தி",
         "channels_label": "சேனல்களைத் தேர்ந்தெடுக்கவும்",
-        "fire_alert_btn": "புவி-இலக்கு எச்சரிக்கையை அனுப்பவும்"
+        "fire_alert_btn": "புவி-இலக்கு எச்சரிக்கையை அனுப்பவும்",
+        
+        // Critical alerts & Policy Sidebar Extensions
+        "critical_broadcasts_title": "🚨 முக்கிய ஒளிபரப்புகள்",
+        "trust_policy_title": "🛡️ சென்டினல் நம்பிக்கை கொள்கை",
+        "trust_policy_desc_1": "ஒவ்வொரு அறிக்கையும் அவசரத்தை தீர்மானிக்க மற்றும் துறைக்கு அனுப்ப உடனடி **AI வகைப்பாட்டிற்கு** உட்படுகிறது.",
+        "trust_policy_desc_2": "**முக்கியம்:** AI மதிப்பெண்கள் பரிந்துரைகள் மட்டுமே. முழுமையான சரிபார்ப்புக்கு அதிகாரப்பூர்வ துறை பதில்கள் தேவை.",
+        "no_emergencies_msg": "செயலிலுள்ள அவசரநிலைகள் எதுவும் இல்லை.",
+        "location_prefix": "இருப்பிடம்",
+        "alert_suffix": "எச்சரிக்கை",
+        "official_clarification_prefix": "அதிகாரப்பூர்வ விளக்கம்",
+        "no_posts_msg": "உலக ஊட்டத்தில் பதிவுகள் எதுவும் இல்லை.",
+        
+        // Departments & alert types
+        "water_department": "நீர் துறை",
+        "traffic_department": "போக்குவரத்து துறை",
+        "weather_department": "வானிலை துறை",
+        "disaster_management": "பேரிடர் மேலாண்மை",
+        "police__public_safety": "காவல்துறை / பொது பாதுகாப்பு",
+        "electricity_department": "மின்சார துறை",
+        "other_departments": "இதர துறைகள்",
+        "emergency": "அவசரநிலை",
+        "flood": "வெள்ளம்",
+        "weather": "வானிலை",
+        "traffic": "போக்குவரத்து",
+        "general": "பொது",
+        "emergency_alert_prefix": "அவசர எச்சரிக்கை",
+        "target_prefix": "இலக்கு",
+        "public_claim_prefix": "பொது அறிக்கை",
+        "status_update_suffix": "நிலை இற்றை",
+        "pending_verification": "சரிபார்ப்பு மதிப்பாய்வு நிலுவையில் உள்ளது.",
+        "government_authority": "அரசு அதிகாரம்",
+        "no_bulletins_msg": "பொருந்தக்கூடிய அறிவிப்புகள் எதுவும் இல்லை."
     },
     ml: {
         "world_feed": "📰 വേൾഡ് ഫീഡ്",
@@ -285,7 +413,39 @@ const SENTINEL_TRANSLATIONS = {
         "radius_label": "വ്യാസാർദ്ധം (കിമീ)",
         "warning_msg_label": "മുന്നറിയിപ്പ് സന്ദേശം",
         "channels_label": "ചാനലുകൾ തിരഞ്ഞെടുക്കുക",
-        "fire_alert_btn": "അലേർട്ട് അയയ്ക്കുക"
+        "fire_alert_btn": "അലേർട്ട് അയയ്ക്കുക",
+        
+        // Critical alerts & Policy Sidebar Extensions
+        "critical_broadcasts_title": "🚨 അടിയന്തര പ്രക്ഷേപണങ്ങൾ",
+        "trust_policy_title": "🛡️ സെന്റിനൽ ട്രസ്റ്റ് നയം",
+        "trust_policy_desc_1": "എല്ലാ ക്ലെയിമുകളും അടിയന്തിരത നിർണ്ണയിക്കാനും അതാത് വകുപ്പിലേക്ക് മാറ്റാനും തൽക്ഷണം **AI വർഗ്ഗീകരണത്തിന്** വിധേയമാകുന്നു.",
+        "trust_policy_desc_2": "**ശ്രദ്ധിക്കുക:** AI അടയാളപ്പെടുത്തലുകൾ നിർദ്ദേശങ്ങൾ മാത്രമാണ്. പൂർണ്ണമായ പരിശോധനയ്ക്ക് ഔദ്യോഗിക വകുപ്പുകളുടെ പ്രതികരണങ്ങൾ ആവശ്യമാണ്.",
+        "no_emergencies_msg": "സജീവമായ അടിയന്തര സാഹചര്യങ്ങൾ ഒന്നുമില്ല.",
+        "location_prefix": "സ്ഥലം",
+        "alert_suffix": "മുന്നറിയിപ്പ്",
+        "official_clarification_prefix": "ഔദ്യോഗിക വിശദീകരണം",
+        "no_posts_msg": "ഫീഡിൽ പോസ്റ്റുകൾ ഒന്നും ലഭ്യമല്ല.",
+        
+        // Departments & alert types
+        "water_department": "ജലവിഭവ വകുപ്പ്",
+        "traffic_department": "ഗതാഗത വകുപ്പ്",
+        "weather_department": "കാലാവസ്ഥാ വകുപ്പ്",
+        "disaster_management": "ദുരന്ത നിവാരണ വകുപ്പ്",
+        "police__public_safety": "പോലീസ് / പൊതു സുരക്ഷ",
+        "electricity_department": "വൈദ്യുതി വകുപ്പ്",
+        "other_departments": "മറ്റു വകുപ്പുകൾ",
+        "emergency": "അടിയന്തരാവസ്ഥ",
+        "flood": "പ്രളയം",
+        "weather": "കാലാവസ്ഥ",
+        "traffic": "ഗതാഗതം",
+        "general": "പൊതുവായത്",
+        "emergency_alert_prefix": "അടിയന്തര മുന്നറിയിപ്പ്",
+        "target_prefix": "ലക്ഷ്യം",
+        "public_claim_prefix": "പൊതു ക്ലെയിം",
+        "status_update_suffix": "നില അപ്ഡേറ്റ്",
+        "pending_verification": "പരിശോധന അവലോകനം ശേഷിക്കുന്നു.",
+        "government_authority": "ഗവൺമെന്റ് അതോറിറ്റി",
+        "no_bulletins_msg": "പൊരുത്തപ്പെടുന്ന ബുള്ളറ്റിനുകൾ ഒന്നും കണ്ടെത്തിയില്ല."
     }
 };
 
@@ -390,6 +550,14 @@ function applyTranslations(lang) {
             if (SENTINEL_TRANSLATIONS[lang] && SENTINEL_TRANSLATIONS[lang][translationKey]) {
                 el.placeholder = SENTINEL_TRANSLATIONS[lang][translationKey];
             }
+        }
+    });
+
+    // 3. Translate elements with explicit data-i18n attributes
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (SENTINEL_TRANSLATIONS[lang] && SENTINEL_TRANSLATIONS[lang][key]) {
+            el.textContent = SENTINEL_TRANSLATIONS[lang][key];
         }
     });
 }

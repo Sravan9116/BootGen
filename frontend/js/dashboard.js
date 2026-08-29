@@ -49,7 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
         filteredItems.sort((a, b) => b.date - a.date);
 
         if (filteredItems.length === 0) {
-            bulletinsList.innerHTML = '<div class="card text-center p-3 text-muted">No matching bulletins found.</div>';
+            bulletinsList.innerHTML = '<div class="card text-center p-3 text-muted" data-i18n="no_bulletins_msg">No matching bulletins found.</div>';
+            if (window.applyTranslations && window.currentLang) {
+                window.applyTranslations(window.currentLang);
+            }
             return;
         }
 
@@ -63,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.innerHTML = `
                     <div class="post-header" style="margin-bottom:0.5rem;">
                         <h4 style="font-size:0.95rem; color:var(--color-critical); display:flex; align-items:center; gap:0.4rem;">
-                            ⚠️ EMERGENCY ALERT: ${alert.alert_type.toUpperCase()}
+                            ⚠️ <span data-i18n="emergency_alert_prefix">EMERGENCY ALERT</span>: <span data-i18n="${alert.alert_type.toLowerCase()}">${alert.alert_type}</span>
                         </h4>
                         <span class="badge badge-critical">${alert.severity}</span>
                     </div>
@@ -71,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${alert.message}
                     </p>
                     <div style="font-size:0.75rem; display:flex; justify-content:between;" class="text-muted">
-                        <span>Target: ${alert.location} (+${alert.radius_km}km)</span>
+                        <span><span data-i18n="target_prefix">Target</span>: ${alert.location} (+${alert.radius_km}km)</span>
                         <span>${new Date(alert.created_at).toLocaleString()}</span>
                     </div>
                 `;
@@ -80,13 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.className = 'card animate-msg-appear';
                 card.style.marginBottom = '1rem';
                 
-                let officialText = post.verification ? post.verification.official_response : 'Pending verification review.';
-                let deptName = post.department ? post.department.name : 'Government Authority';
+                const isPending = !(post.verification && post.verification.official_response);
+                const officialText = isPending ? 'Pending verification review.' : post.verification.official_response;
+                const deptName = post.department ? post.department.name : 'Government Authority';
+                const deptKey = deptName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
                 
                 card.innerHTML = `
                     <div class="post-header" style="margin-bottom: 0.5rem;">
                         <h4 style="font-size:0.95rem; font-family:'Poppins';">
-                            📌 Public Claim: ${post.title}
+                            📌 <span data-i18n="public_claim_prefix">Public Claim</span>: ${post.title}
                         </h4>
                         <span class="badge ${getStatusBadgeClass(post.status)}">${post.status.replace('_', ' ')}</span>
                     </div>
@@ -94,8 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         "${post.content}"
                     </p>
                     <div style="padding: 0.8rem; background:rgba(0,0,0,0.02); border-radius:var(--border-radius); border-left:3px solid var(--color-secondary); font-size:0.85rem;">
-                        <strong>${deptName} Status Update:</strong><br>
-                        ${officialText}
+                        <strong><span data-i18n="${deptKey}">${deptName}</span> <span data-i18n="status_update_suffix">Status Update</span>:</strong><br>
+                        <span ${isPending ? 'data-i18n="pending_verification"' : ''}>${officialText}</span>
                     </div>
                     <div style="font-size:0.75rem; text-align:right; margin-top:0.5rem;" class="text-muted">
                         ${new Date(post.created_at).toLocaleString()}
@@ -105,6 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             bulletinsList.appendChild(card);
         });
+
+        // Trigger translation update for the newly added dashboard items
+        if (window.applyTranslations && window.currentLang) {
+            window.applyTranslations(window.currentLang);
+        }
     }
 
     function getStatusBadgeClass(status) {

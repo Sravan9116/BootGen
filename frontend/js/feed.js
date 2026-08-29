@@ -67,14 +67,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     el.style.border = '1px solid var(--color-critical)';
                     el.style.color = 'white';
                     el.innerHTML = `
-                        <h4 style="font-size:0.85rem; text-transform:uppercase;">⚠️ ${alert.alert_type} ALERT</h4>
+                        <h4 style="font-size:0.85rem; text-transform:uppercase;">⚠️ <span data-i18n="${alert.alert_type.toLowerCase()}">${alert.alert_type}</span> <span data-i18n="alert_suffix">ALERT</span></h4>
                         <p style="font-size:0.8rem; margin:0.25rem 0;">${alert.message}</p>
-                        <span style="font-size:0.7rem; opacity:0.7;">Location: ${alert.location}</span>
+                        <span style="font-size:0.7rem; opacity:0.7;"><span data-i18n="location_prefix">Location</span>: ${alert.location}</span>
                     `;
                     alertsWidget.appendChild(el);
                 });
             } else {
-                alertsWidget.innerHTML = '<div class="text-muted" style="font-size:0.85rem;">No active critical emergencies.</div>';
+                alertsWidget.innerHTML = '<div class="text-muted" style="font-size:0.85rem;" data-i18n="no_emergencies_msg">No active critical emergencies.</div>';
+            }
+            
+            // Apply translations to dynamic content
+            if (window.applyTranslations && window.currentLang) {
+                window.applyTranslations(window.currentLang);
             }
         } catch (e) {
             console.error("Failed to load alerts widget:", e);
@@ -85,7 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderPosts(posts) {
         postsContainer.innerHTML = '';
         if (posts.length === 0) {
-            postsContainer.innerHTML = '<div class="card text-center p-3 text-muted">No posts available on the feed.</div>';
+            postsContainer.innerHTML = '<div class="card text-center p-3 text-muted" data-i18n="no_posts_msg">No posts available on the feed.</div>';
+            if (window.applyTranslations && window.currentLang) {
+                window.applyTranslations(window.currentLang);
+            }
             return;
         }
 
@@ -93,6 +101,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = createPostCard(post);
             postsContainer.appendChild(card);
         });
+
+        // Translate the newly rendered posts
+        if (window.applyTranslations && window.currentLang) {
+            window.applyTranslations(window.currentLang);
+        }
     }
 
     function getStatusBadgeClass(status) {
@@ -157,10 +170,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Official Response markup
         let verificationMarkup = '';
         if (post.verification && post.verification.official_response) {
+            const deptKey = deptName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
             verificationMarkup = `
                 <div class="official-response-box" style="margin-top:1rem; padding: 1rem; border-radius: var(--border-radius); background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.25);">
                     <h5 style="font-size:0.85rem; color: #047857; margin-bottom:0.25rem; display:flex; align-items:center; gap:0.4rem;">
-                        🏛️ Official Clarification: ${deptName}
+                        🏛️ <span data-i18n="official_clarification_prefix">Official Clarification</span>: <span data-i18n="${deptKey}">${deptName}</span>
                     </h5>
                     <p style="font-size:0.85rem; line-height:1.5;">${post.verification.official_response}</p>
                 </div>
