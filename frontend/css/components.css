@@ -432,3 +432,73 @@
 .theme-dark .form-control:focus {
     border-color: var(--color-accent);
 }
+
+/* Modern Verdict Selector Tiles */
+.verdict-selector-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-top: 0.75rem;
+}
+
+.verdict-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.theme-light .verdict-option {
+    border-color: var(--border-color-light);
+    background: #f8fafc;
+}
+
+.verdict-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-light .verdict-option:hover {
+    background: #f1f5f9;
+}
+
+.verdict-option input[type="radio"] {
+    accent-color: var(--color-secondary);
+}
+
+/* Selected States using :has() */
+.verdict-option:has(input[type="radio"]:checked)[data-verdict="VERIFIED"] {
+    border-color: var(--color-success);
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--color-success-bright);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.verdict-option:has(input[type="radio"]:checked)[data-verdict="PARTIALLY_CORRECT"] {
+    border-color: var(--color-warning);
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+.verdict-option:has(input[type="radio"]:checked)[data-verdict="FALSE"] {
+    border-color: var(--color-danger);
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+}
+
+.verdict-option:has(input[type="radio"]:checked)[data-verdict="CRITICAL"] {
+    border-color: var(--color-critical);
+    background: rgba(255, 0, 127, 0.15);
+    color: #ff4da6;
+    box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+}
+
