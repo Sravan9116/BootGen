@@ -27,17 +27,22 @@ def get_fallback_analysis(message: str) -> Dict[str, Any]:
     summary = "No specific issue detected."
     reason = "The system is using fallback heuristics analysis."
 
-    # Location extraction
-    locations = ["anna nagar", "t nagar", "adyar", "velachery", "city center", "highway 45", "main road", "zone 3"]
+    # Location extraction (predefined list or regex matching e.g., "in Nagercoil", "at Amrita")
+    locations = ["anna nagar", "t nagar", "adyar", "velachery", "city center", "highway 45", "main road", "zone 3", "amrita", "nagercoil"]
     for loc in locations:
         if loc in text:
             location = loc.title()
             break
+            
+    if location == "Unknown Location":
+        match_in = re.search(r'\b(?:in|at)\s+([a-zA-Z0-9\s]{3,20})\b', message)
+        if match_in:
+            location = match_in.group(1).strip().title()
 
     # Topic & Department Routing Heuristics
     if any(k in text for k in ["flood", "flooding", "waterlog", "submerged", "drown", "water level"]):
         topic = "Flood"
-        department = "Disaster Management"
+        department = "Water Department"
         urgency = "HIGH" if any(k in text for k in ["trap", "severe", "danger", "critical", "help"]) else "MEDIUM"
         summary = "Potential flooding incident reported."
         reason = "Detected flooding-related keywords in content."
@@ -107,6 +112,10 @@ Analyze the following user social media message:
 Classify it based on topic, urgency (LOW, MEDIUM, HIGH, CRITICAL), recommended government department, location if mentioned, and write a summary.
 The classification field must be one of: "UNDER_REVIEW", "LIKELY_TRUE", "PARTIALLY_CORRECT", "LIKELY_FALSE", "FALSE".
 The recommended_department must be one of: "Traffic Department", "Water Department", "Weather Department", "Health Department", "Disaster Management", "Electricity Department", "Police / Public Safety", "Other Departments".
+
+Routing rules for recommended_department:
+- Always route flood, waterlogging, pipeline leaks, and rain accumulation reports to "Water Department".
+- Always route fire accidents, explosions, collapses, and rescue events to "Disaster Management".
 
 You MUST respond ONLY with a valid JSON object matching the schema below, without markdown formatting blocks:
 {{
