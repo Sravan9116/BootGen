@@ -78,13 +78,13 @@
                     
                     <!-- COLUMN 1: User claim & media forensic status -->
                     <div class="workspace-col">
-                        <div class="card" style="flex:1;">
+                        <div class="card workspace-card">
                             <h3 class="card-title" style="border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:0.75rem;">
                                 📝 Original User Claim
                             </h3>
                             
-                            <div style="margin-top:1rem;">
-                                <h4 id="claim-title" style="font-size:1.1rem; font-family:'Poppins';">No case selected</h4>
+                            <div class="workspace-card-content">
+                                <h4 id="claim-title" style="font-size:1.1rem; font-family:var(--font-primary);">No case selected</h4>
                                 <span id="claim-meta" class="text-muted" style="font-size:0.75rem; display:block; margin:0.35rem 0 1.25rem;">Select an active case from the dropdown above.</span>
                                 
                                 <p id="claim-body" style="font-size:0.9rem; line-height:1.6; margin-bottom:1.5rem;" class="text-muted">
@@ -103,15 +103,15 @@
 
                     <!-- COLUMN 2: AI Pre-Analysis metrics -->
                     <div class="workspace-col">
-                        <div class="card" style="flex:1;">
+                        <div class="card workspace-card">
                             <h3 class="card-title" style="border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:0.75rem;">
                                 🧠 AI Pre-Analysis Ingest
                             </h3>
                             
-                            <div style="margin-top:1rem; display:flex; flex-direction:column; gap:1.25rem;">
+                            <div class="workspace-card-content">
                                 <div>
                                     <label class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Topic Classification</label>
-                                    <h4 id="ai-topic" style="font-size:1.05rem; font-family:'Poppins';">General</h4>
+                                    <h4 id="ai-topic" style="font-size:1.05rem; font-family:var(--font-primary);">General</h4>
                                 </div>
                                 
                                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
@@ -145,12 +145,12 @@
 
                     <!-- COLUMN 3: Government Decision verification panel -->
                     <div class="workspace-col">
-                        <div class="card" style="flex:1;">
+                        <div class="card workspace-card">
                             <h3 class="card-title" style="border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:0.75rem;">
                                 ⚖️ Official Verification Verdict
                             </h3>
                             
-                            <div style="margin-top:1.5rem;">
+                            <div class="workspace-card-content">
                                 <div class="form-group">
                                     <label>Claim Status Verdict</label>
                                     <div class="verdict-selector-group">
@@ -178,7 +178,7 @@
                                     <textarea id="official-response-text" class="form-control" style="min-height:140px; resize:none; font-size:0.85rem;" placeholder="Write response to publish. Citizen feed will be updated instantly..."></textarea>
                                 </div>
 
-                                <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:2rem;">
+                                <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:2rem; padding-bottom: 1rem;">
                                     <button id="btn-save-draft" class="btn btn-secondary full-width" onclick="showToast('Draft saved successfully to session cache.')">
                                         Save Workspace Draft
                                     </button>
