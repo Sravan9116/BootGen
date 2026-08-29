@@ -77,6 +77,19 @@ class VerificationResponse(BaseModel):
     class Config:
         from_attributes = True
 
+# Comment schemas
+class CommentCreate(BaseModel):
+    content: str
+
+class CommentResponse(BaseModel):
+    id: int
+    post_id: int
+    username: str
+    content: str
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
 # Post schemas
 class PostCreate(BaseModel):
     title: str
@@ -86,6 +99,8 @@ class PostCreate(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     image_url: Optional[str] = None # For demo client to attach image path
+    is_official_news: Optional[bool] = False
+    news_source: Optional[str] = None
 
 class PostResponse(BaseModel):
     id: int
@@ -96,12 +111,17 @@ class PostResponse(BaseModel):
     latitude: Optional[float]
     longitude: Optional[float]
     status: str
+    likes_count: int
+    duplicate_count: int
+    is_official_news: bool
+    news_source: Optional[str]
     created_at: datetime
     user: UserResponse
     department: Optional[DepartmentResponse] = None
     media: List[MediaResponse] = []
     ai_analysis: Optional[AiAnalysisResponse] = None
     verification: Optional[VerificationResponse] = None
+    comments: List[CommentResponse] = []
     class Config:
         from_attributes = True
 

@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.orm import Session
+from typing import Optional
 import os
 import json
 
@@ -62,6 +63,47 @@ def get_messages(db: Session = Depends(get_db)):
         }
         for msg in messages
     ]
+
+from backend.schemas import MessageCreate
+from fastapi import Header
+
+@app.post("/api/messages")
+async def create_message(msg_in: MessageCreate, x_user_id: Optional[str] = Header(None), db: Session = Depends(get_db)):
+    user_id = 1
+    if x_user_id:
+        try:
+            user_id = int(x_user_id)
+        except ValueError:
+            pass
+            
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        user = db.query(User).first()
+        if not user:
+            raise HTTPException(status_code=400, detail="User not found")
+            
+    db_msg = Message(user_id=user.id, content=msg_in.content, image_url=msg_in.image_url)
+    db.add(db_msg)
+    db.commit()
+    db.refresh(db_msg)
+    
+    # Broadcast to WebSocket clients
+    payload = {
+        "type": "NEW_MESSAGE",
+        "message": {
+            "id": db_msg.id,
+            "content": db_msg.content,
+            "image_url": db_msg.image_url,
+            "created_at": db_msg.created_at.isoformat(),
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "role": user.role
+            }
+        }
+    }
+    await manager.broadcast(payload)
+    return payload["message"]
 
 @app.get("/assets/images/flood.jpg")
 def get_flood_image():
@@ -154,6 +196,7 @@ def seed_database():
             ("Disaster Management", "DISASTER"),
             ("Police / Public Safety", "POLICE"),
             ("Electricity Department", "ELECTRICITY"),
+            ("Media Verification Bureau", "MEDIA"),
             ("Other Departments", "OTHER")
         ]
         
@@ -175,6 +218,7 @@ def seed_database():
             ("traffic_officer", "traffic@sentinel.gov", "traffic", "STAFF", depts["TRAFFIC"].id, None),
             ("weather_officer", "weather@sentinel.gov", "weather", "STAFF", depts["WEATHER"].id, None),
             ("disaster_officer", "disaster@sentinel.gov", "disaster", "STAFF", depts["DISASTER"].id, None),
+            ("media_officer", "media@sentinel.gov", "media", "STAFF", depts["MEDIA"].id, None),
             ("alert_recipient_1", "recipient1@sentinel.gov", "password", "USER", None, "+916301809962"),
             ("alert_recipient_2", "recipient2@sentinel.gov", "password", "USER", None, "+916309592888"),
             ("alert_recipient_3", "recipient3@sentinel.gov", "password", "USER", None, "+919342695448"),

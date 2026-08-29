@@ -3,24 +3,32 @@
 document.addEventListener('DOMContentLoaded', () => {
     const chatMessages = document.getElementById('chat-messages-container');
     const chatInput = document.getElementById('chat-message-input');
-    const mockImageSelect = document.getElementById('chat-mock-image');
+    const fileInput = document.getElementById('chat-file-input');
+    const previewContainer = document.getElementById('chat-upload-preview');
+    const previewFilename = document.getElementById('chat-upload-filename');
+    const btnRemovePreview = document.getElementById('btn-remove-chat-upload');
     const btnSend = document.getElementById('btn-send-chat');
     const typingIndicator = document.getElementById('typing-indicator');
 
     const currentUser = API.auth.getCurrentUser() || { id: 1, username: 'civilian' };
     let typingTimer = null;
     let isTypingState = false;
+    
+    let uploadedImageBase64 = null;
+    let lastLoadedMessageId = 0;
 
     // Load Chat History on entry
     async function loadChatHistory() {
         try {
-            // We fetch the chat logs from the server
             const response = await fetch(`${window.location.origin}/api/messages`);
             if (response.ok) {
                 const messages = await response.json();
                 chatMessages.innerHTML = '';
                 messages.forEach(msg => {
                     appendMessageBubble(msg);
+                    if (msg.id > lastLoadedMessageId) {
+                        lastLoadedMessageId = msg.id;
+                    }
                 });
                 scrollToBottom();
             }
@@ -67,21 +75,73 @@ document.addEventListener('DOMContentLoaded', () => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Send chat message
-    function sendChatMessage() {
-        const content = chatInput.value.trim();
-        const mockImage = mockImageSelect.value;
-        
-        if (!content) return;
+    // Handle image file selection
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                uploadedImageBase64 = event.target.result;
+                previewFilename.textContent = `Attached: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                previewContainer.style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            clearAttachment();
+        }
+    });
 
-        // Dispatch via global WebSocket manager
-        WS.sendChat(currentUser.id, content, mockImage || null);
+    btnRemovePreview.addEventListener('click', clearAttachment);
+
+    function clearAttachment() {
+        uploadedImageBase64 = null;
+        fileInput.value = '';
+        previewContainer.style.display = 'none';
+        previewFilename.textContent = 'No photo selected';
+    }
+
+    // Send chat message
+    async function sendChatMessage() {
+        const content = chatInput.value.trim();
         
-        // Clear input
+        if (!content && !uploadedImageBase64) return;
+
+        // Clean input field and cache parameters
+        const messageText = content;
+        const attachmentData = uploadedImageBase64;
         chatInput.value = '';
-        mockImageSelect.value = '';
+        clearAttachment();
+
+        // 1. Dispatch via WebSockets if connected
+        if (WS && WS.isConnected) {
+            WS.sendChat(currentUser.id, messageText, attachmentData || null);
+        } else {
+            // 2. Fallback: Dispatch via HTTP REST API (for serverless environments like Vercel)
+            try {
+                const response = await fetch(`${window.location.origin}/api/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-user-id': currentUser.id.toString()
+                    },
+                    body: JSON.stringify({
+                        content: messageText,
+                        image_url: attachmentData || null
+                    })
+                });
+                if (response.ok) {
+                    const msg = await response.json();
+                    if (msg.id > lastLoadedMessageId) {
+                        appendMessageBubble(msg);
+                        lastLoadedMessageId = msg.id;
+                        scrollToBottom();
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to post message via HTTP REST fallback:", err);
+            }
+        }
         
-        // Stop typing indicator immediately
         stopTyping();
     }
 
@@ -113,8 +173,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // WebSocket real-time incoming listeners
     WS.on('NEW_MESSAGE', (data) => {
-        appendMessageBubble(data.message);
-        scrollToBottom();
+        if (data.message.id > lastLoadedMessageId) {
+            appendMessageBubble(data.message);
+            lastLoadedMessageId = data.message.id;
+            scrollToBottom();
+        }
     });
 
     WS.on('USER_TYPING', (data) => {
@@ -127,6 +190,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initalize
+    // Polling fallback to synchronize chat updates when WebSockets are disconnected
+    async function pollNewMessages() {
+        if (WS && WS.isConnected) return; // WS active, no fallback needed
+        
+        try {
+            const response = await fetch(`${window.location.origin}/api/messages`);
+            if (response.ok) {
+                const messages = await response.json();
+                const newMessages = messages.filter(msg => msg.id > lastLoadedMessageId);
+                if (newMessages.length > 0) {
+                    newMessages.forEach(msg => {
+                        appendMessageBubble(msg);
+                        if (msg.id > lastLoadedMessageId) {
+                            lastLoadedMessageId = msg.id;
+                        }
+                    });
+                    scrollToBottom();
+                }
+            }
+        } catch (e) {
+            console.error("Fallback synchronization error:", e);
+        }
+    }
+
+    // Start polling loop every 3 seconds
+    setInterval(pollNewMessages, 3000);
+
+    // Initialise
     loadChatHistory();
 });

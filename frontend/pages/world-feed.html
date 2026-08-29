@@ -164,7 +164,15 @@
                                     <option value="Epidemic">Health Hazard / Outbreak</option>
                                     <option value="Fire">Thermal / Fire Emergency</option>
                                 </select>
-                                <input type="text" id="composer-location" class="form-control" placeholder="Specific location (e.g. Anna Nagar)..." style="font-size:0.85rem; padding: 0.5rem 1rem;">
+                            </div>
+
+                            <!-- Verified Media Outlet Selector -->
+                            <div style="margin-bottom: 1rem; border: 1px solid rgba(255, 255, 255, 0.08); padding: 0.75rem; border-radius: var(--border-radius-sm); background: rgba(255,255,255,0.01);">
+                                <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+                                    <input type="checkbox" id="composer-is-news" style="width: auto;">
+                                    <span>📢 Share as Verified Media/News Outlet</span>
+                                </label>
+                                <input type="text" id="composer-news-source" class="form-control" placeholder="News Channel/Outlet Name (e.g. Sentinel News)..." style="display:none; font-size:0.85rem; padding: 0.4rem 0.8rem; margin-top: 0.5rem; width:100%;">
                             </div>
 
                             <div class="composer-actions">

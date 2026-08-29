@@ -14,6 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagePreviewImg = document.getElementById('image-preview-img');
     const btnRemovePreview = document.getElementById('btn-remove-preview');
     const btnPublish = document.getElementById('btn-publish-post');
+    const composerIsNews = document.getElementById('composer-is-news');
+    const composerNewsSource = document.getElementById('composer-news-source');
+    
+    if (composerIsNews && composerNewsSource) {
+        composerIsNews.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                composerNewsSource.style.display = 'block';
+            } else {
+                composerNewsSource.style.display = 'none';
+                composerNewsSource.value = '';
+            }
+        });
+    }
     
     // Modal elements
     const neuralModal = document.getElementById('neural-modal');
@@ -121,6 +134,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Render comments list dynamically
+    async function renderCommentsList(postId, container, countText) {
+        try {
+            const response = await fetch(`/api/posts/${postId}/comments`);
+            if (response.ok) {
+                const comments = await response.json();
+                if (countText) countText.textContent = comments.length;
+                container.innerHTML = '';
+                if (comments.length === 0) {
+                    container.innerHTML = '<div class="text-muted" style="font-size:0.8rem; font-style:italic; padding: 0.25rem 0.5rem;" data-i18n="no_comments_yet">No comments yet. Be the first to discuss!</div>';
+                    if (window.applyTranslations && window.currentLang) {
+                        window.applyTranslations(window.currentLang);
+                    }
+                    return;
+                }
+                comments.forEach(c => {
+                    const el = document.createElement('div');
+                    el.style.fontSize = '0.8rem';
+                    el.style.padding = '0.4rem 0.8rem';
+                    el.style.background = 'rgba(255,255,255,0.02)';
+                    el.style.border = '1px solid rgba(255,255,255,0.04)';
+                    el.style.borderRadius = 'var(--border-radius-sm)';
+                    el.innerHTML = `
+                        <div style="font-weight:600; display:flex; justify-content:space-between; margin-bottom:0.1rem;">
+                            <span>@${c.username}</span>
+                            <span class="text-muted" style="font-size:0.7rem;">${new Date(c.created_at).toLocaleTimeString()}</span>
+                        </div>
+                        <div class="text-muted" style="line-height:1.4;">${c.content}</div>
+                    `;
+                    container.appendChild(el);
+                });
+                container.scrollTop = container.scrollHeight;
+            }
+        } catch (e) {
+            console.error("Comments loading error:", e);
+        }
+    }
+
     // Create single Post Card element
     function createPostCard(post) {
         const el = document.createElement('div');
@@ -141,15 +192,15 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
-        // Image & forensic progress markup
+        // Image attachments markup
         let imageMarkup = '';
         if (post.media && post.media.length > 0) {
             const imgItem = post.media[0];
             const stageLabels = {
-                'PENDING': 'AI Ingestion Active...',
-                'METADATA_ANALYZED': 'Metadata Authenticated',
-                'VISUAL_ANALYZED': 'Object Analysis Complete',
-                'DUPLICATE_CHECKED': 'Database Deduplicated',
+                'PENDING': 'Queued',
+                'METADATA_ANALYZED': 'Metadata Verified',
+                'VISUAL_ANALYZED': 'Visual Context Verified',
+                'DUPLICATE_CHECKED': 'Historical Integrity Verified',
                 'CLAIM_MATCHED': 'Authenticity Certified',
                 'COMPLETED': 'Forensic Analysis Completed (Score: 94%)'
             };
@@ -181,6 +232,16 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
+        // Source Tag markup
+        let sourceMarkup = '';
+        if (post.is_official_news) {
+            sourceMarkup = `
+                <div style="display:inline-flex; align-items:center; gap:0.25rem; margin-top:0.5rem; font-size:0.75rem; color:var(--color-accent); font-weight:600;">
+                    <span>📢 Source: ${post.news_source || 'Verified Channel'}</span>
+                </div>
+            `;
+        }
+
         el.innerHTML = `
             <div class="post-header">
                 <div class="post-author">
@@ -196,17 +257,115 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="post-body">
                 <h3 style="font-size:1.05rem; margin-bottom:0.5rem; font-family:'Poppins';">${post.title}</h3>
-                <p class="text-muted" style="margin-bottom: 1rem;">${post.content}</p>
+                <p class="text-muted" style="margin-bottom: 0.5rem;">${post.content}</p>
+                ${sourceMarkup}
                 ${imageMarkup}
                 ${aiMarkup}
                 ${verificationMarkup}
             </div>
-            <div class="post-footer">
-                <div class="post-action" onclick="showToast('Thank you for voting. Vote recorded.')">👍 Like</div>
-                <div class="post-action" onclick="showToast('Commenting is disabled on prototype.')">💬 Comment</div>
-                <div class="post-action" onclick="navigator.clipboard.writeText(window.location.href); showToast('Link copied to clipboard')">🔗 Share</div>
+            <div class="post-footer" style="padding-top: 0.75rem; border-top: 1px solid var(--border-color-light); margin-top: 1rem;">
+                <div class="post-action" id="like-btn-${post.id}" style="cursor:pointer; display:inline-flex; align-items:center; gap:0.3rem;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                    Like (<span id="likes-count-${post.id}">${post.likes_count || 0}</span>)
+                </div>
+                <div class="post-action" id="comment-toggle-${post.id}" style="cursor:pointer; display:inline-flex; align-items:center; gap:0.3rem;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    Comment (<span id="comments-count-${post.id}">${post.comments ? post.comments.length : 0}</span>)
+                </div>
+                <div class="post-action" id="share-btn-${post.id}" style="cursor:pointer; display:inline-flex; align-items:center; gap:0.3rem;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    Share
+                </div>
+            </div>
+            
+            <!-- Comments Section Drawer -->
+            <div class="comments-section" id="comments-section-${post.id}" style="display: none; border-top: 1px solid var(--border-color-light); padding: 1rem 0 0 0; margin-top: 0.75rem; background: transparent;">
+                <div class="comments-list" id="comments-list-${post.id}" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem; max-height: 180px; overflow-y: auto;">
+                    <!-- Appended dynamically -->
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="text" id="comment-input-${post.id}" class="form-control" placeholder="Write a comment..." style="font-size: 0.8rem; padding: 0.4rem 0.8rem; flex: 1;">
+                    <button class="btn btn-primary" id="btn-submit-comment-${post.id}" style="padding: 0.4rem 1rem; font-size: 0.8rem; width: auto;">Post</button>
+                </div>
             </div>
         `;
+
+        // Bind interactive events dynamically in background
+        const currentUser = API.auth.getCurrentUser() || { id: 1, username: 'civilian' };
+        setTimeout(() => {
+            const likeBtn = document.getElementById(`like-btn-${post.id}`);
+            const commentToggle = document.getElementById(`comment-toggle-${post.id}`);
+            const shareBtn = document.getElementById(`share-btn-${post.id}`);
+            const commentInput = document.getElementById(`comment-input-${post.id}`);
+            const btnSubmitComment = document.getElementById(`btn-submit-comment-${post.id}`);
+            const commentsSection = document.getElementById(`comments-section-${post.id}`);
+            const commentsList = document.getElementById(`comments-list-${post.id}`);
+            const likesCountText = document.getElementById(`likes-count-${post.id}`);
+            const commentsCountText = document.getElementById(`comments-count-${post.id}`);
+
+            if (likeBtn) {
+                likeBtn.addEventListener('click', async () => {
+                    try {
+                        const response = await fetch(`/api/posts/${post.id}/like`, { method: 'POST' });
+                        if (response.ok) {
+                            const updatedPost = await response.json();
+                            if (likesCountText) likesCountText.textContent = updatedPost.likes_count;
+                            showToast('Thank you for voting. Like recorded!', 'success');
+                        }
+                    } catch (e) {
+                        console.error("Failed to like post:", e);
+                    }
+                });
+            }
+
+            if (commentToggle) {
+                commentToggle.addEventListener('click', () => {
+                    if (commentsSection.style.display === 'none') {
+                        commentsSection.style.display = 'block';
+                        renderCommentsList(post.id, commentsList, commentsCountText);
+                    } else {
+                        commentsSection.style.display = 'none';
+                    }
+                });
+            }
+
+            if (btnSubmitComment) {
+                const submitComment = async () => {
+                    const content = commentInput.value.trim();
+                    if (!content) return;
+                    try {
+                        const response = await fetch(`/api/posts/${post.id}/comments`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-user-id': currentUser.id.toString()
+                            },
+                            body: JSON.stringify({ content })
+                        });
+                        if (response.ok) {
+                            commentInput.value = '';
+                            renderCommentsList(post.id, commentsList, commentsCountText);
+                            showToast('Comment posted successfully!', 'success');
+                        }
+                    } catch (e) {
+                        console.error("Failed to post comment:", e);
+                    }
+                };
+
+                btnSubmitComment.addEventListener('click', submitComment);
+                commentInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') submitComment();
+                });
+            }
+
+            if (shareBtn) {
+                shareBtn.addEventListener('click', () => {
+                    const shareText = `🚨 SENTINEL Incident Alert:\n"${post.title}"\nLocation: ${post.location}\nStatus: ${post.status.replace('_', ' ')}\nCheck details on Sentinel platform.`;
+                    navigator.clipboard.writeText(shareText);
+                    showToast('Copied formatted share text to clipboard!', 'success');
+                });
+            }
+        }, 50);
 
         return el;
     }
@@ -218,8 +377,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const category = composerCategory.value;
         const location = composerLocation.value.trim();
 
+        const isOfficialNews = composerIsNews ? composerIsNews.checked : false;
+        const newsSource = composerNewsSource ? composerNewsSource.value.trim() : "";
+
         if (!title || !content) {
             showToast('Please provide a title and report description', 'error');
+            return;
+        }
+
+        if (isOfficialNews && !newsSource) {
+            showToast('Please specify the name of the verified news outlet / publisher', 'warning');
             return;
         }
 
@@ -249,7 +416,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 content,
                 category: category === 'General' ? 'Other' : category,
                 location: location || 'Unknown Location',
-                image_url: selectedMockImage || null
+                image_url: selectedMockImage || null,
+                is_official_news: isOfficialNews,
+                news_source: isOfficialNews ? newsSource : null
             };
 
             await API.posts.create(postData);
@@ -263,6 +432,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 composerContent.value = '';
                 composerCategory.value = 'General';
                 composerLocation.value = '';
+                if (composerIsNews) {
+                    composerIsNews.checked = false;
+                    composerNewsSource.style.display = 'none';
+                    composerNewsSource.value = '';
+                }
                 removeImagePreview();
             }, 1000);
 

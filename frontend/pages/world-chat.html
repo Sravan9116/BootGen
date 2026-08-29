@@ -102,16 +102,21 @@
                     </div>
                     
                     <!-- Chat Input Section -->
-                    <div class="chat-input-area" style="padding: 1rem 1.5rem; border-top: 1px solid var(--border-color-light);">
-                        <input type="text" id="chat-message-input" class="chat-input" placeholder="Type a message to the public channel...">
-                        
-                        <select id="chat-mock-image" class="form-control" style="width: auto; font-size: 0.8rem; padding: 0.5rem; height: auto;">
-                            <option value="">Attach photo...</option>
-                            <option value="/assets/images/flood.jpg">Flooded Road</option>
-                            <option value="/assets/images/accident.jpg">Car Accident</option>
-                        </select>
-                        
-                        <button id="btn-send-chat" class="btn btn-primary" style="padding: 0.75rem 2rem;">Send</button>
+                    <div class="chat-input-area" style="padding: 1rem 1.5rem; border-top: 1px solid var(--border-color-light); display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div id="chat-upload-preview" style="display: none; align-items: center; gap: 0.5rem; justify-content: space-between; font-size: 0.75rem; padding: 0.4rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: var(--border-radius-sm); border: 1px solid rgba(255,255,255,0.05);">
+                            <span id="chat-upload-filename" class="text-muted" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 250px;">No photo selected</span>
+                            <button id="btn-remove-chat-upload" style="background: none; border: none; color: var(--color-danger); cursor: pointer; font-weight: 700; font-size: 1.1rem; padding: 0 0.5rem;">×</button>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; align-items: center; width: 100%;">
+                            <input type="text" id="chat-message-input" class="chat-input" placeholder="Type a message to the public channel..." style="flex: 1;">
+                            
+                            <label for="chat-file-input" class="btn btn-secondary" style="padding: 0.6rem 1rem; margin: 0; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 0.3rem; white-space: nowrap; height: auto;">
+                                📷 <span data-i18n="upload_photo">Upload Photo</span>
+                            </label>
+                            <input type="file" id="chat-file-input" accept="image/*" style="display: none;">
+                            
+                            <button id="btn-send-chat" class="btn btn-primary" style="padding: 0.6rem 1.5rem; font-size: 0.85rem;" data-i18n="send_btn">Send</button>
+                        </div>
                     </div>
 
                 </div>

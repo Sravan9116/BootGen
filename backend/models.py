@@ -46,8 +46,15 @@ class Post(Base):
     location = Column(String, nullable=True)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
-    status = Column(String, default="UNDER_REVIEW") # UNDER_REVIEW, LIKELY_TRUE, PARTIALLY_CORRECT, LIKELY_FALSE, VERIFIED, FALSE, CRITICAL
+    status = Column(String, default="UNDER_REVIEW") # UNDER_REVIEW, LIKELY_TRUE, PARTIALLY_CORRECT, LIKELY_FALSE, VERIFIED, FALSE, CRITICAL, SIMILAR_TO_EVENT
     department_id = Column(Integer, ForeignKey("departments.id"), nullable=True)
+    
+    # Platform upgrade columns
+    likes_count = Column(Integer, default=0, nullable=False)
+    is_official_news = Column(Boolean, default=False, nullable=False)
+    news_source = Column(String, nullable=True)
+    duplicate_count = Column(Integer, default=1, nullable=False)
+    
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="posts")
@@ -57,6 +64,7 @@ class Post(Base):
     verification = relationship("Verification", uselist=False, back_populates="post", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="post", cascade="all, delete-orphan")
     incident = relationship("Incident", uselist=False, back_populates="post")
+    comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
 
 class Message(Base):
     __tablename__ = "messages"
@@ -68,6 +76,17 @@ class Message(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="messages")
+
+class Comment(Base):
+    __tablename__ = "comments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), nullable=False)
+    username = Column(String, nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    post = relationship("Post", back_populates="comments")
 
 class Media(Base):
     __tablename__ = "media"

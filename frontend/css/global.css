@@ -134,3 +134,18 @@ body.theme-dark .text-muted, .theme-dark .text-muted {
     background-color: #dc2626;
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
 }
+
+/* Nav Item SVG Icon Styling */
+.nav-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    vertical-align: middle;
+    stroke-width: 2;
+    transition: transform 0.2s ease;
+}
+
+.nav-item:hover .nav-icon {
+    transform: scale(1.1);
+}
