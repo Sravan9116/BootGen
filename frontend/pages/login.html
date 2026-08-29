@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SENTINEL - Secure Login Portal</title>
-    <link rel="stylesheet" href="/css/variables.css">
-    <link rel="stylesheet" href="/css/reset.css">
-    <link rel="stylesheet" href="/css/global.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <link rel="stylesheet" href="/css/components.css">
-    <link rel="stylesheet" href="/css/animations.css">
-    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="../css/variables.css?v=1.0.1">
+    <link rel="stylesheet" href="../css/reset.css?v=1.0.1">
+    <link rel="stylesheet" href="../css/global.css?v=1.0.1">
+    <link rel="stylesheet" href="../css/layout.css?v=1.0.1">
+    <link rel="stylesheet" href="../css/components.css?v=1.0.1">
+    <link rel="stylesheet" href="../css/animations.css?v=1.0.1">
+    <link rel="stylesheet" href="../css/responsive.css?v=1.0.1">
     <style>
         .login-layout {
             display: flex;
@@ -87,9 +87,9 @@
 
     </div>
 
-    <script src="/js/i18n.js"></script>
-    <script src="/js/api.js"></script>
-    <script src="/js/ui.js"></script>
+    <script src="../js/i18n.js?v=1.0.1"></script>
+    <script src="../js/api.js?v=1.0.1"></script>
+    <script src="../js/ui.js?v=1.0.1"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const btnLogin = document.getElementById('btn-login');
@@ -115,9 +115,9 @@
                     // Route user to dashboard based on role
                     setTimeout(() => {
                         if (user.role === 'ADMIN') {
-                            window.location.href = '/pages/admin.html';
+                            window.location.href = 'admin.html';
                         } else {
-                            window.location.href = '/pages/department.html';
+                            window.location.href = 'department.html';
                         }
                     }, 800);
                 } catch(e) {

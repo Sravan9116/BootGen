@@ -53,7 +53,12 @@ const API = {
         },
         logout() {
             localStorage.clear();
-            window.location.href = '/pages/login.html';
+            const isInPages = window.location.href.includes('/pages/') || (window.location.protocol === 'file:' && !window.location.href.endsWith('index.html') && window.location.href.includes('/pages/'));
+            if (isInPages) {
+                window.location.href = 'login.html';
+            } else {
+                window.location.href = 'pages/login.html';
+            }
         },
         getCurrentUser() {
             const id = localStorage.getItem('sentinel_user_id');

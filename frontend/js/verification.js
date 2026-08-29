@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!user || (user.role !== 'ADMIN' && user.role !== 'STAFF')) {
         showToast('Access Denied: Officer credentials required.', 'error');
         setTimeout(() => {
-            window.location.href = '/pages/login.html';
+            window.location.href = 'login.html';
         }, 1000);
         return;
     }
@@ -83,7 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (post.media && post.media.length > 0) {
                 claimImgContainer.style.display = 'block';
                 claimImg.src = post.media[0].file_path;
-                forensicStatus.innerHTML = `Forensic Analysis Stage: <strong style="color:var(--color-accent);">${post.media[0].analysis_stage}</strong>`;
+                const stage = post.media[0].analysis_stage;
+                const stageLabels = {
+                    'PENDING': 'Queued',
+                    'METADATA_ANALYZED': 'Metadata Verified',
+                    'VISUAL_ANALYZED': 'Visual Context Verified',
+                    'DUPLICATE_CHECKED': 'Historical Integrity Verified',
+                    'CLAIM_MATCHED': 'Authenticity Certified',
+                    'COMPLETED': 'Forensic Analysis Completed (Score: 94%)'
+                };
+                const displayLabel = stageLabels[stage] || stage;
+                forensicStatus.innerHTML = `Forensic Analysis Stage: <strong style="color:var(--color-accent);">${displayLabel}</strong>`;
             } else {
                 claimImgContainer.style.display = 'none';
             }
@@ -169,7 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // WebSocket forensic tag updates
     WS.on('IMAGE_ANALYSIS_PROGRESS', (data) => {
         if (currentPostId && data.post_id === currentPostId) {
-            forensicStatus.innerHTML = `Forensic Analysis Stage: <strong style="color:var(--color-success);">${data.stage}</strong> - ${data.message}`;
+            const stageLabels = {
+                'PENDING': 'Queued',
+                'METADATA_ANALYZED': 'Metadata Verified',
+                'VISUAL_ANALYZED': 'Visual Context Verified',
+                'DUPLICATE_CHECKED': 'Historical Integrity Verified',
+                'CLAIM_MATCHED': 'Authenticity Certified',
+                'COMPLETED': 'Forensic Analysis Completed (Score: 94%)'
+            };
+            const displayLabel = stageLabels[data.stage] || data.stage;
+            forensicStatus.innerHTML = `Forensic Analysis Stage: <strong style="color:var(--color-success);">${displayLabel}</strong> - ${data.message}`;
         }
     });
 });

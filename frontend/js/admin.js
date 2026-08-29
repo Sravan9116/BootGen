@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!user || user.role !== 'ADMIN') {
         showToast('Access Denied: Admin authorization required.', 'error');
         setTimeout(() => {
-            window.location.href = '/pages/login.html';
+            window.location.href = 'login.html';
         }, 1000);
         return;
     }
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span style="padding:0.15rem 0.4rem; border-radius:3px; background:${color}; color:white; font-size:0.65rem; font-weight:700;">
                         ${post.status.replace('_', ' ')}
                     </span>
-                    <a href="/pages/verification.html?id=${post.id}" style="color:var(--color-secondary); font-size:0.7rem; font-weight:600;">
+                    <a href="verification.html?id=${post.id}" style="color:var(--color-secondary); font-size:0.7rem; font-weight:600;">
                         Review Case ➡️
                     </a>
                 </div>
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td><span style="font-weight:500; font-size:0.75rem; text-transform:uppercase;">${post.ai_analysis ? post.ai_analysis.urgency : 'LOW'}</span></td>
             <td><span class="badge ${badgeClass}" id="table-badge-${post.id}">${post.status.replace('_', ' ')}</span></td>
             <td>
-                <a href="/pages/verification.html?id=${post.id}" class="btn btn-primary" style="padding:0.25rem 0.75rem; font-size:0.75rem; border-radius:4px;">
+                <a href="verification.html?id=${post.id}" class="btn btn-primary" style="padding:0.25rem 0.75rem; font-size:0.75rem; border-radius:4px;">
                     Review
                 </a>
             </td>

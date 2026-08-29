@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!user || (user.role !== 'ADMIN' && user.role !== 'STAFF')) {
         showToast('Access Denied: Officer authorization required.', 'error');
         setTimeout(() => {
-            window.location.href = '/pages/login.html';
+            window.location.href = 'login.html';
         }, 1000);
         return;
     }
@@ -133,9 +133,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (currentLane === 'NEW' || currentLane === 'AI') {
             actionButton = `<button class="btn btn-secondary" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="startCaseReview(${post.id})">⚙️ Review</button>`;
         } else if (currentLane === 'REVIEW') {
-            actionButton = `<a href="/pages/verification.html?id=${post.id}" class="btn btn-primary" style="font-size:0.7rem; padding:0.25rem 0.5rem;">⚖️ Verify</a>`;
+            actionButton = `<a href="verification.html?id=${post.id}" class="btn btn-primary" style="font-size:0.7rem; padding:0.25rem 0.5rem;">⚖️ Verify</a>`;
         } else if (currentLane === 'VERIFIED') {
-            actionButton = `<a href="/pages/verification.html?id=${post.id}" class="btn btn-primary" style="font-size:0.7rem; padding:0.25rem 0.5rem; background-color:var(--color-success);">🌍 Publish</a>`;
+            actionButton = `<a href="verification.html?id=${post.id}" class="btn btn-primary" style="font-size:0.7rem; padding:0.25rem 0.5rem; background-color:var(--color-success);">🌍 Publish</a>`;
         }
 
         const dateStr = new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

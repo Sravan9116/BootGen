@@ -269,7 +269,49 @@ async def create_post(
                 db.commit()
     else:
         # Standard civilian report
-        if matched_post:
+        # Let's search if there's any verified news that matches this report
+        verified_events = db.query(Post).filter(
+            Post.is_official_news == True,
+            Post.status == "VERIFIED"
+        ).all()
+        
+        matched_verified = None
+        for v_post in verified_events:
+            v_content_sim = SequenceMatcher(None, post_in.content.lower(), v_post.content.lower()).ratio()
+            v_title_sim = SequenceMatcher(None, post_in.title.lower(), v_post.title.lower()).ratio()
+            loc_match = (post_in.location.lower().strip() == v_post.location.lower().strip()) if post_in.location and v_post.location else True
+            if (v_content_sim > 0.45 or v_title_sim > 0.45) and loc_match:
+                matched_verified = v_post
+                break
+
+        if matched_verified:
+            # Analyze if this matches the verified info or is a rumor/fake news contradicting it
+            is_contradiction = False
+            contradiction_keywords = ["fake", "rumor", "hoax", "false", "debunk", "misleading", "incorrect", "denied", "refuted", "untrue", "wrong"]
+            if any(kw in post_in.content.lower() for kw in contradiction_keywords) or any(kw in matched_verified.content.lower() for kw in contradiction_keywords):
+                is_contradiction = True
+            
+            if "no " in matched_verified.content.lower() or "not " in matched_verified.content.lower() or "false" in matched_verified.content.lower():
+                is_contradiction = True
+                
+            if is_contradiction:
+                post.status = "FALSE"
+                ai_class = "FALSE"
+                post.department_id = media_dept_id
+                ai_confidence = max(ai_confidence, 85)
+                ai_summary = f"Civilian rumor/fake claim contradicting verified report: '{matched_verified.title}'."
+                incident.status = "ROUTED"
+                incident.severity = "LOW"
+            else:
+                post.status = "SIMILAR_TO_EVENT"
+                post.department_id = media_dept_id
+                ai_class = "SIMILAR_TO_EVENT"
+                ai_confidence = max(ai_confidence, matched_verified.ai_analysis.confidence if matched_verified.ai_analysis else 90)
+                ai_urgency = matched_verified.ai_analysis.urgency if matched_verified.ai_analysis else "MEDIUM"
+                ai_summary = f"Citizen report aligning with verified news: '{matched_verified.title}'. Analysis: {ai_summary}"
+                incident.status = "ROUTED"
+                incident.severity = ai_urgency
+        elif matched_post:
             if matched_post.is_official_news:
                 # Citizens posting about verified news events get categorized as similar
                 post.status = "SIMILAR_TO_EVENT"
@@ -284,8 +326,21 @@ async def create_post(
                 # Citizens reporting unverified event -> increment duplicate counter
                 matched_post.duplicate_count += 1
                 
+                # Check for evidence and proof (attached image or critical urgency keywords)
+                has_evidence = False
+                if post_in.image_url or (matched_post.media and len(matched_post.media) > 0):
+                    has_evidence = True
+                if ai_urgency == "CRITICAL" or (matched_post.ai_analysis and matched_post.ai_analysis.urgency == "CRITICAL"):
+                    has_evidence = True
+                    
+                is_priority_escalation = False
+                if matched_post.duplicate_count >= 3 and has_evidence:
+                    is_priority_escalation = True
+                elif matched_post.duplicate_count >= 5:
+                    is_priority_escalation = True
+                    
                 # Check for Priority Escalation Threshold
-                if matched_post.duplicate_count >= 3 and matched_post.status != "CRITICAL":
+                if is_priority_escalation and matched_post.status != "CRITICAL":
                     matched_post.status = "CRITICAL"
                     if matched_post.incident:
                         matched_post.incident.severity = "CRITICAL"

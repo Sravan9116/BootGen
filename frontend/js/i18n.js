@@ -569,15 +569,6 @@ function injectLanguageSelector() {
 
         const select = document.createElement('select');
         select.className = 'lang-switcher-select';
-        select.style.fontSize = '0.75rem';
-        select.style.padding = '0.2rem 0.4rem';
-        select.style.marginLeft = '1rem';
-        select.style.background = 'rgba(255,255,255,0.08)';
-        select.style.border = '1px solid rgba(255,255,255,0.15)';
-        select.style.borderRadius = 'var(--border-radius)';
-        select.style.color = '#ffffff';
-        select.style.cursor = 'pointer';
-        select.style.outline = 'none';
 
         const languages = [
             { code: 'en', name: '🌐 En' },
@@ -606,7 +597,8 @@ function injectLanguageSelector() {
             location.reload();
         });
 
-        container.appendChild(select);
+        // Insert as sibling after logo container
+        container.parentNode.insertBefore(select, container.nextSibling);
     });
 }
 

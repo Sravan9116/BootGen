@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!user || user.role !== 'ADMIN') {
         showToast('Access Denied: Admin role required.', 'error');
         setTimeout(() => {
-            window.location.href = '/pages/login.html';
+            window.location.href = 'login.html';
         }, 1000);
         return;
     }

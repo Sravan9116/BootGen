@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!user || (user.role !== 'ADMIN' && user.role !== 'STAFF')) {
         showToast('Access Denied: Command credentials required.', 'error');
         setTimeout(() => {
-            window.location.href = '/pages/login.html';
+            window.location.href = 'login.html';
         }, 1000);
         return;
     }
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h4 style="font-weight:600; color:var(--color-critical); font-size:0.85rem; margin-bottom:0.25rem;">⚠️ CRITICAL: ${post.title}</h4>
                 <p style="font-size:0.75rem; margin-bottom:0.5rem;" class="text-muted">${post.location}</p>
                 <div style="display:flex; justify-content:between; align-items:center;">
-                    <a href="/pages/verification.html?id=${post.id}" style="color:var(--color-secondary); font-size:0.75rem; font-weight:600;">
+                    <a href="verification.html?id=${post.id}" style="color:var(--color-secondary); font-size:0.75rem; font-weight:600;">
                         Open Command Panel ➡️
                     </a>
                 </div>
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="display:flex; justify-content:between; gap:0.5rem; flex-wrap:wrap;">
                     <button class="btn btn-secondary" style="font-size:0.75rem; padding:0.35rem 0.6rem;" onclick="escalateCase(${post.id})">⚡ Escalate</button>
                     <button class="btn btn-primary" style="font-size:0.75rem; padding:0.35rem 0.6rem; background-color:var(--color-success);" onclick="resolveCase(${post.id})">✅ Resolve</button>
-                    <a href="/pages/alerts.html?id=${post.id}&loc=${encodeURIComponent(post.location)}&msg=${encodeURIComponent(post.title)}" class="btn btn-danger" style="font-size:0.75rem; padding:0.35rem 0.6rem;">📢 Send Alert</a>
+                    <a href="alerts.html?id=${post.id}&loc=${encodeURIComponent(post.location)}&msg=${encodeURIComponent(post.title)}" class="btn btn-danger" style="font-size:0.75rem; padding:0.35rem 0.6rem;">📢 Send Alert</a>
                 </div>
             `;
             
