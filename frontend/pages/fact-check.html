@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENTINEL - Fact Checker Archive</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <style>
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        .fact-card {
+            border-left: 6px solid var(--border-color-light);
+            margin-bottom: 1.5rem;
+            padding: 2rem;
+        }
+        .fact-card.status-VERIFIED { border-left-color: var(--color-success); }
+        .fact-card.status-PARTIALLY_CORRECT { border-left-color: var(--color-warning); }
+        .fact-card.status-FALSE { border-left-color: var(--color-danger); }
+        .fact-card.status-CRITICAL { border-left-color: var(--color-critical); }
+        
+        .fact-flow {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1.5rem;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed var(--border-color-light);
+        }
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: var(--text-secondary-dark);
+        }
+    </style>
+</head>
+<body class="theme-light">
+
+    <div class="app-layout">
+        
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar">
+            <div>
+                <div class="logo-container">
+                    <div class="logo-icon">🛡️</div>
+                    <div class="logo-text" style="color: var(--text-primary-light);">SENTINEL</div>
+                </div>
+                <nav class="nav-links">
+                    <a href="/pages/world-feed.html" class="nav-item">
+                        <span>📰</span> World Feed
+                    </a>
+                    <a href="/pages/world-chat.html" class="nav-item">
+                        <span>💬</span> World Chat
+                    </a>
+                    <a href="/pages/dashboard.html" class="nav-item">
+                        <span>📊</span> My Dashboard
+                    </a>
+                    <a href="/pages/report.html" class="nav-item">
+                        <span>✍️</span> Report Incident
+                    </a>
+                    <a href="/pages/fact-check.html" class="nav-item active">
+                        <span>🔍</span> Fact Checker
+                    </a>
+                </nav>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="card" style="padding: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="avatar" style="width: 32px; height: 32px;">U</div>
+                    <div style="font-size: 0.85rem;">
+                        <h5 id="header-username">@civilian</h5>
+                        <span class="text-muted" style="font-size: 0.7rem;">Citizen Account</span>
+                    </div>
+                </div>
+                <a href="/pages/login.html" class="btn btn-secondary" style="font-size: 0.85rem;">
+                    🏛️ Government Admin Portal
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN WINDOW -->
+        <div class="main-content">
+            
+            <header class="app-header">
+                <div>
+                    <h2 style="font-size: 1.25rem;">Official Fact Checker</h2>
+                    <span class="text-muted" style="font-size: 0.8rem;">Browse verified reports and combat misinformation instantly.</span>
+                </div>
+                <button id="mobile-menu-toggle" class="btn btn-secondary" style="padding: 0.5rem; display: none;">☰</button>
+            </header>
+
+            <div class="content-body">
+                
+                <!-- Search container -->
+                <div class="search-box">
+                    <input type="text" id="search-input" class="form-control" style="font-size:1.1rem; padding: 0.85rem 1.5rem;" placeholder="Search a rumor, keyword, claim or topic...">
+                    <button id="btn-search" class="btn btn-primary" style="padding: 0 2.5rem;">Search</button>
+                </div>
+                
+                <!-- Fact check lists -->
+                <div id="fact-results-container">
+                    <!-- Populated dynamically -->
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/websocket.js"></script>
+    <script src="/js/ui.js"></script>
+    <script>
+        // Simple Fact Check controller script inline for simplicity & speed
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            const btnSearch = document.getElementById('btn-search');
+            const resultsContainer = document.getElementById('fact-results-container');
+
+            async function performSearch() {
+                renderSkeleton(resultsContainer, 2);
+                const query = searchInput.value.trim();
+                
+                try {
+                    const data = await API.factCheck.search(query);
+                    renderResults(data);
+                } catch(e) {
+                    resultsContainer.innerHTML = `<div class="card text-center text-danger p-3">Failed to load fact check logs.</div>`;
+                }
+            }
+
+            function renderResults(claims) {
+                resultsContainer.innerHTML = '';
+                if (claims.length === 0) {
+                    resultsContainer.innerHTML = '<div class="card text-center p-3 text-muted">No verified claims matched your query.</div>';
+                    return;
+                }
+
+                claims.forEach(item => {
+                    const card = document.createElement('div');
+                    const badgeClass = getStatusBadgeClass(item.status);
+                    
+                    card.className = `card fact-card status-${item.status} animate-msg-appear`;
+                    card.innerHTML = `
+                        <div class="post-header" style="margin-bottom: 1rem;">
+                            <h3 style="font-size:1.15rem; font-family:'Poppins';">Rumor: "${item.title}"</h3>
+                            <span class="badge ${badgeClass}">${item.status.replace('_', ' ')}</span>
+                        </div>
+                        
+                        <div class="fact-flow">
+                            <!-- Left: Citizen Claim -->
+                            <div style="padding: 1rem; border-radius: var(--border-radius); background: rgba(0,0,0,0.02);">
+                                <h4 style="font-size:0.85rem; margin-bottom:0.25rem;" class="text-muted">ORIGINAL USER CLAIM</h4>
+                                <p style="font-size:0.9rem;">"${item.claim}"</p>
+                            </div>
+                            
+                            <!-- Center: Arrow -->
+                            <div class="flow-arrow">➡️</div>
+                            
+                            <!-- Right: Verified Truth -->
+                            <div style="padding: 1rem; border-radius: var(--border-radius); background: rgba(16,185,129,0.03); border: 1px solid rgba(16,185,129,0.1);">
+                                <h4 style="font-size:0.85rem; color:#047857; margin-bottom:0.25rem;">OFFICIAL CLARIFICATION</h4>
+                                <p style="font-size:0.9rem;">${item.official_response}</p>
+                            </div>
+                        </div>
+                        
+                        <div style="font-size:0.75rem; margin-top:1.5rem; display:flex; justify-content:between;" class="text-muted">
+                            <span>Clarified by: <strong>${item.verified_by}</strong></span>
+                            <span>Updated: ${new Date(item.updated_at).toLocaleString()}</span>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(card);
+                });
+            }
+
+            function getStatusBadgeClass(status) {
+                switch(status) {
+                    case 'VERIFIED': return 'badge-verified';
+                    case 'PARTIALLY_CORRECT': return 'badge-partially-correct';
+                    case 'FALSE': return 'badge-false';
+                    case 'CRITICAL': return 'badge-critical';
+                    default: return 'badge-under-review';
+                }
+            }
+
+            btnSearch.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            // Initial load
+            performSearch();
+        });
+    </script>
+</body>
+</html>

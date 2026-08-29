@@ -1,0 +1,51 @@
+:root {
+    /* Color Palette */
+    --primary-bg-light: #f8fafc;
+    --primary-bg-dark: #070b13;
+    
+    --card-bg-light: rgba(255, 255, 255, 0.9);
+    --card-bg-dark: rgba(13, 20, 35, 0.65);
+    
+    --border-color-light: #e2e8f0;
+    --border-color-dark: rgba(59, 130, 246, 0.15);
+    
+    --text-primary-light: #0f172a;
+    --text-primary-dark: #f8fafc;
+    --text-secondary-light: #475569;
+    --text-secondary-dark: #94a3b8;
+
+    /* Theme Colors */
+    --color-primary: #0a1128;       /* Deep Navy Blue */
+    --color-secondary: #0070f3;     /* Electric Blue */
+    --color-accent: #00f5ff;        /* Neon Cyber Cyan */
+    --color-success: #10b981;       /* Green */
+    --color-success-bright: #34d399;/* Bright Green */
+    --color-warning: #f59e0b;       /* Orange */
+    --color-danger: #ef4444;        /* Red */
+    --color-critical: #ff007f;      /* Emergency Pinkish Red */
+    --color-critical-pulse: #dc2626;
+
+    /* Layout Tokens */
+    --sidebar-width: 260px;
+    --navbar-height: 70px;
+    --border-radius: 12px;
+    --border-radius-lg: 20px;
+    --border-radius-sm: 6px;
+    
+    /* Shadows */
+    --shadow-light: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-dark: 0 4px 20px 0 rgba(0, 0, 0, 0.5), 0 0 15px 0 rgba(59, 130, 246, 0.15);
+    
+    /* Glassmorphism */
+    --glass-blur: blur(12px);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --glass-border-blue: 1px solid rgba(59, 130, 246, 0.25);
+    
+    /* Transitions */
+    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Typography */
+    --font-primary: 'Lucida Fax', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Geneva, sans-serif;
+}

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENTINEL - Geo-Targeted Alert Dispatcher</title>
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <style>
+        .alerts-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        .channels-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .channel-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--border-radius-sm);
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .delivery-progress-container {
+            margin-top: 2rem;
+            display: none;
+        }
+        .progress-bar-segment {
+            height: 12px;
+            border-radius: var(--border-radius-sm);
+        }
+    </style>
+</head>
+<body class="theme-dark">
+
+    <div class="app-layout">
+        
+        <!-- LEFT GOVERNMENT SIDEBAR -->
+        <aside class="sidebar">
+            <div>
+                <div class="logo-container">
+                    <div class="logo-icon" style="color: var(--color-accent);">🛡️</div>
+                    <div class="logo-text" style="color: var(--text-primary-dark);">SENTINEL CORE</div>
+                </div>
+                <nav class="nav-links">
+                    <a href="/pages/admin.html" class="nav-item">
+                        <span>📊</span> Control Command
+                    </a>
+                    <a href="/pages/verification.html" class="nav-item">
+                        <span>⚖️</span> Verification Room
+                    </a>
+                    <a href="/pages/department.html" class="nav-item">
+                        <span>🏢</span> Dept Workspaces
+                    </a>
+                    <a href="/pages/emergency.html" class="nav-item">
+                        <span>⚠️</span> Emergency Center
+                    </a>
+                    <a href="/pages/alerts.html" class="nav-item active">
+                        <span>📢</span> Alert Dispatch
+                    </a>
+                </nav>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="card" style="padding: 0.8rem; display: flex; align-items: center; gap: 0.75rem; background:rgba(0,0,0,0.3);">
+                    <div class="avatar" style="width: 32px; height: 32px; background-color: var(--color-critical);">A</div>
+                    <div style="font-size: 0.85rem;">
+                        <h5 id="header-username">@admin</h5>
+                        <span class="text-muted" style="font-size: 0.7rem; color: var(--color-accent);" id="header-user-role">Administrator</span>
+                    </div>
+                </div>
+                <a href="#" id="logout-btn" class="btn btn-danger" style="font-size: 0.85rem;">
+                    🔌 Disconnect Console
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN PANEL -->
+        <div class="main-content">
+            
+            <header class="app-header">
+                <div>
+                    <h2 style="font-size: 1.25rem;">Geo-Targeted Alert Console</h2>
+                    <span class="text-muted" style="font-size: 0.8rem;">Define geographic threat zones and fire targeted civilian alerts.</span>
+                </div>
+                <button id="mobile-menu-toggle" class="btn btn-secondary" style="padding: 0.5rem; display: none;">☰</button>
+            </header>
+
+            <div class="content-body">
+                
+                <div class="alerts-layout-grid">
+                    
+                    <!-- Left: Alert Definition Form -->
+                    <div class="card">
+                        <h3 class="card-title">📢 Dissemination Builder</h3>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                            <div class="form-group">
+                                <label>Alert Type</label>
+                                <select id="alert-type" class="form-control">
+                                    <option value="Flood">Flood Alert</option>
+                                    <option value="Weather">Weather Alert</option>
+                                    <option value="Traffic">Traffic Outage</option>
+                                    <option value="General">General Broadcast</option>
+                                    <option value="Emergency">Civilian SOS Warning</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Severity Level</label>
+                                <select id="alert-severity" class="form-control">
+                                    <option value="MINOR">MINOR</option>
+                                    <option value="MODERATE">MODERATE</option>
+                                    <option value="SEVERE">SEVERE</option>
+                                    <option value="CRITICAL">CRITICAL</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:1rem;">
+                            <div class="form-group">
+                                <label>Affected Target Location</label>
+                                <input type="text" id="alert-location" class="form-control" placeholder="Anna Nagar Sector 3...">
+                            </div>
+                            <div class="form-group">
+                                <label>Radius Target (km)</label>
+                                <input type="number" id="alert-radius" class="form-control" value="2.0" step="0.5" min="0.5" max="15.0">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Dissemination Channels</label>
+                            <div class="channels-group">
+                                <label class="channel-label">
+                                    <input type="checkbox" name="channel" value="in-app" checked> In-App Push Banner
+                                </label>
+                                <label class="channel-label">
+                                    <input type="checkbox" name="channel" value="sms" checked> Mass Carrier SMS
+                                </label>
+                                <label class="channel-label">
+                                    <input type="checkbox" name="channel" value="push"> Mobile App Notification
+                                </label>
+                                <label class="channel-label">
+                                    <input type="checkbox" name="channel" value="sos" checked> Emergency SOS Siren Lock
+                                </label>
+                                <label class="channel-label">
+                                    <input type="checkbox" name="channel" value="whatsapp"> WhatsApp API Broadcast
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Emergency Message Text</label>
+                            <textarea id="alert-message" class="form-control" style="min-height:100px; resize:none;" placeholder="Type clear, actionable instructions for civilians..."></textarea>
+                        </div>
+
+                        <div style="display:flex; justify-content:between; align-items:center; margin:1rem 0; padding:0.5rem; background:rgba(255,255,255,0.02); border-radius:var(--border-radius-sm);">
+                            <span style="font-size:0.8rem;" class="text-muted">Estimated Target Recipients:</span>
+                            <strong style="color:var(--color-accent); font-size:0.9rem;" id="recipient-estimate">5,000 Users</strong>
+                        </div>
+
+                        <button id="btn-fire-alert" class="btn btn-danger full-width" style="padding:0.85rem; font-weight:700;">
+                            🚨 FIRE GEO-TARGETED ALERT
+                        </button>
+                    </div>
+
+                    <!-- Right: Targeting Map Selection & Progress -->
+                    <div class="workspace-col">
+                        <div class="card">
+                            <h3 class="card-title">📍 Geographic Target Selector</h3>
+                            <p class="text-muted" style="font-size:0.8rem; margin-bottom:1rem;">Click on the tactical map to center the circular danger zone.</p>
+                            <div id="alerts-map" class="map-container" style="height:320px; margin-bottom:0;"></div>
+                        </div>
+                        
+                        <!-- Real-time Delivery Stats -->
+                        <div class="card delivery-progress-container" id="delivery-progress-box">
+                            <h3 class="card-title" style="color:var(--color-accent); margin-bottom:1.5rem;">📊 Alert Dissemination Metrics</h3>
+                            
+                            <div style="display:flex; justify-content:between; font-size:0.8rem; margin-bottom:0.5rem;">
+                                <span>Delivering alerts to carrier switches...</span>
+                                <span id="delivery-total-estimate" style="font-weight:600;">0 / 0</span>
+                            </div>
+
+                            <!-- Progress segment bar -->
+                            <div style="width:100%; height:12px; background:rgba(255,255,255,0.05); border-radius:50px; overflow:hidden; display:flex;">
+                                <div id="progress-delivered" style="width: 0%; background-color: var(--color-success);" class="progress-bar-segment"></div>
+                                <div id="progress-pending" style="width: 0%; background-color: var(--color-warning);" class="progress-bar-segment"></div>
+                                <div id="progress-failed" style="width: 0%; background-color: var(--color-danger);" class="progress-bar-segment"></div>
+                            </div>
+                            
+                            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem; margin-top:1.5rem; text-align:center; font-size:0.85rem;">
+                                <div>
+                                    <div style="color:var(--color-success); font-weight:700; font-size:1.15rem;" id="stats-delivered">0</div>
+                                    <span class="text-muted" style="font-size:0.75rem;">Delivered (SMS/In-App)</span>
+                                </div>
+                                <div>
+                                    <div style="color:var(--color-warning); font-weight:700; font-size:1.15rem;" id="stats-pending">0</div>
+                                    <span class="text-muted" style="font-size:0.75rem;">Pending Queue</span>
+                                </div>
+                                <div>
+                                    <div style="color:var(--color-danger); font-weight:700; font-size:1.15rem;" id="stats-failed">0</div>
+                                    <span class="text-muted" style="font-size:0.75rem;">Transmission Fails</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Leaflet JS Map dependency -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script src="/js/api.js"></script>
+    <script src="/js/websocket.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/alerts.js"></script>
+</body>
+</html>

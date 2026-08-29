@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENTINEL - Secure Login Portal</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <style>
+        .login-layout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+        .login-box {
+            width: 100%;
+            max-width: 440px;
+            padding: 2.5rem;
+            background: rgba(13, 20, 35, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--border-radius-lg);
+            backdrop-filter: var(--glass-blur);
+        }
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body class="theme-dark">
+
+    <div class="login-layout">
+        
+        <div class="login-box animate-scale-in">
+            <div class="login-logo">
+                <span style="font-size: 2.5rem;">🛡️</span>
+                <div>
+                    <h1 style="font-family:'Poppins'; font-size:1.5rem; letter-spacing:2px; font-weight:800; background: linear-gradient(135deg, var(--color-accent), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        SENTINEL
+                    </h1>
+                    <span style="font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; opacity:0.6;">
+                        Secure Command Core
+                    </span>
+                </div>
+            </div>
+
+            <h3 style="font-size:1.1rem; text-align:center; margin-bottom:1.5rem;">AUTHENTICATION REQUIRED</h3>
+            
+            <div class="form-group">
+                <label>Secure Government ID</label>
+                <input type="text" id="login-gov-id" class="form-control" placeholder="SG-XXXX-YYYY" style="text-transform:uppercase;">
+            </div>
+            
+            <div class="form-group">
+                <label>Registered Email</label>
+                <input type="email" id="login-email" class="form-control" placeholder="officer@sentinel.gov">
+            </div>
+
+            <div class="form-group" style="margin-bottom:2rem;">
+                <label>Access Password</label>
+                <input type="password" id="login-password" class="form-control" placeholder="••••••••">
+            </div>
+
+            <button id="btn-login" class="btn btn-primary full-width" style="padding: 0.85rem;">
+                Decrypt & Access Core
+            </button>
+            
+            <div style="margin-top:1.5rem; border-top:1px solid rgba(255,255,255,0.05); padding-top:1rem; font-size:0.8rem; text-align:center;" class="text-muted">
+                <strong>Demo Credentials:</strong><br>
+                Admin: admin@sentinel.gov / admin<br>
+                Water: water@sentinel.gov / water<br>
+                Traffic: traffic@sentinel.gov / traffic<br>
+                Disaster: disaster@sentinel.gov / disaster
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/ui.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnLogin = document.getElementById('btn-login');
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
+            const govIdInput = document.getElementById('login-gov-id');
+
+            btnLogin.addEventListener('click', async () => {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+                const govId = govIdInput.value.trim();
+
+                if (!email || !password) {
+                    showToast('Please fill in email and password credentials.', 'error');
+                    return;
+                }
+
+                try {
+                    // Try auth login
+                    const user = await API.auth.login(email, password);
+                    showToast(`Access granted. Welcome back Officer @${user.username}`, 'success');
+                    
+                    // Route user to dashboard based on role
+                    setTimeout(() => {
+                        if (user.role === 'ADMIN') {
+                            window.location.href = '/pages/admin.html';
+                        } else {
+                            window.location.href = '/pages/department.html';
+                        }
+                    }, 800);
+                } catch(e) {
+                    showToast(`Access denied: ${e.message}`, 'error');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENTINEL - Secure Government Administration Core</title>
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <style>
+        /* Admin page specific details */
+        .chart-container-box {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .admin-dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .admin-sidebar-nav {
+            background-color: var(--primary-bg-dark);
+            height: 100vh;
+        }
+        
+        .recent-reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .recent-reports-table th, .recent-reports-table td {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .recent-reports-table th {
+            font-weight: 600;
+            color: var(--text-secondary-dark);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+        .recent-reports-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+    </style>
+</head>
+<body class="theme-dark">
+
+    <div class="app-layout">
+        
+        <!-- LEFT GOVERNMENT SIDEBAR -->
+        <aside class="sidebar">
+            <div>
+                <div class="logo-container">
+                    <div class="logo-icon" style="color: var(--color-accent);">🛡️</div>
+                    <div class="logo-text" style="color: var(--text-primary-dark);">SENTINEL CORE</div>
+                </div>
+                <nav class="nav-links">
+                    <a href="/pages/admin.html" class="nav-item active">
+                        <span>📊</span> Control Command
+                    </a>
+                    <a href="/pages/verification.html" class="nav-item">
+                        <span>⚖️</span> Verification Room
+                    </a>
+                    <a href="/pages/department.html" class="nav-item">
+                        <span>🏢</span> Dept Workspaces
+                    </a>
+                    <a href="/pages/emergency.html" class="nav-item">
+                        <span>⚠️</span> Emergency Center
+                    </a>
+                    <a href="/pages/alerts.html" class="nav-item">
+                        <span>📢</span> Alert Dispatch
+                    </a>
+                </nav>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="card" style="padding: 0.8rem; display: flex; align-items: center; gap: 0.75rem; background:rgba(0,0,0,0.3);">
+                    <div class="avatar" style="width: 32px; height: 32px; background-color: var(--color-critical);">A</div>
+                    <div style="font-size: 0.85rem;">
+                        <h5 id="header-username">@admin</h5>
+                        <span class="text-muted" style="font-size: 0.7rem; color: var(--color-accent);" id="header-user-role">Administrator</span>
+                    </div>
+                </div>
+                <a href="#" id="logout-btn" class="btn btn-danger" style="font-size: 0.85rem;">
+                    🔌 Disconnect Console
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN COMMAND PANEL -->
+        <div class="main-content">
+            
+            <header class="app-header">
+                <div>
+                    <h2 style="font-size: 1.25rem;">Control Room</h2>
+                    <span class="text-muted" style="font-size: 0.8rem;">Unified Intelligence Command and routing metrics.</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:1.5rem;">
+                    <div style="font-size:0.8rem; font-family:monospace; background:rgba(0,0,0,0.3); padding:0.4rem 0.8rem; border-radius:var(--border-radius-sm); border:1px solid rgba(255,255,255,0.05);">
+                        SESSION: SECURE
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-body" style="overflow-y: auto;">
+                
+                <!-- STATS ROWS -->
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <span class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Total Ingested Claims</span>
+                        <div class="stat-value" id="stat-total-posts">0</div>
+                    </div>
+                    <div class="card stat-card" style="border-left:3px solid var(--color-secondary);">
+                        <span class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Under AI Review</span>
+                        <div class="stat-value" id="stat-under-review" style="color: var(--color-secondary);">0</div>
+                    </div>
+                    <div class="card stat-card" style="border-left:3px solid var(--color-success);">
+                        <span class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Officially Verified</span>
+                        <div class="stat-value" id="stat-verified" style="color: var(--color-success);">0</div>
+                    </div>
+                    <div class="card stat-card" style="border-left:3px solid var(--color-danger);">
+                        <span class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">False / Blocked</span>
+                        <div class="stat-value" id="stat-false-claims" style="color: var(--color-danger);">0</div>
+                    </div>
+                    <div class="card stat-card" style="border-left:3px solid var(--color-critical);">
+                        <span class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Critical Dispatches</span>
+                        <div class="stat-value" id="stat-critical" style="color: var(--color-critical); font-weight:800;">0</div>
+                    </div>
+                </div>
+
+                <!-- Incident Map panel -->
+                <div class="card" style="padding: 1.5rem; margin-bottom: 2rem;">
+                    <h3 class="card-title">🗺️ Unified Tactical Situation Map</h3>
+                    <div id="admin-map" class="map-container" style="height: 380px; margin-bottom:0;"></div>
+                </div>
+
+                <!-- CHARTS PANEL -->
+                <div class="chart-container-box">
+                    <div class="card">
+                        <h3 class="card-title">📈 Information Classification Spread</h3>
+                        <div style="height:220px; position:relative;">
+                            <canvas id="chart-classifications"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">🏢 Workload by Department</h3>
+                        <div style="height:220px; position:relative;">
+                            <canvas id="chart-workloads"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRID LISTINGS -->
+                <div class="admin-dashboard-grid">
+                    
+                    <!-- Left: Recent Claims table -->
+                    <div class="card" style="overflow-x: auto;">
+                        <h3 class="card-title" style="margin-bottom:1.5rem;">📂 Active Raw Claims Queue</h3>
+                        <table class="recent-reports-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Department</th>
+                                    <th>AI Confidence</th>
+                                    <th>Urgency</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-reports-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Right: AI routing queue logs -->
+                    <div class="card">
+                        <h3 class="card-title">🧠 AI Ingestion & Routing Logs</h3>
+                        <div id="ai-logs-container" style="display:flex; flex-direction:column; gap:0.75rem; max-height: 400px; overflow-y: auto;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Leaflet JS Map dependency -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Chart.js dependency -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="/js/api.js"></script>
+    <script src="/js/websocket.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

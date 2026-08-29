@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENTINEL - Report Incident</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <style>
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        .timeline-box {
+            display: none;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body class="theme-light">
+
+    <div class="app-layout">
+        
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar">
+            <div>
+                <div class="logo-container">
+                    <div class="logo-icon">🛡️</div>
+                    <div class="logo-text" style="color: var(--text-primary-light);">SENTINEL</div>
+                </div>
+                <nav class="nav-links">
+                    <a href="/pages/world-feed.html" class="nav-item">
+                        <span>📰</span> World Feed
+                    </a>
+                    <a href="/pages/world-chat.html" class="nav-item">
+                        <span>💬</span> World Chat
+                    </a>
+                    <a href="/pages/dashboard.html" class="nav-item">
+                        <span>📊</span> My Dashboard
+                    </a>
+                    <a href="/pages/report.html" class="nav-item active">
+                        <span>✍️</span> Report Incident
+                    </a>
+                    <a href="/pages/fact-check.html" class="nav-item">
+                        <span>🔍</span> Fact Checker
+                    </a>
+                </nav>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="card" style="padding: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="avatar" style="width: 32px; height: 32px;">U</div>
+                    <div style="font-size: 0.85rem;">
+                        <h5 id="header-username">@civilian</h5>
+                        <span class="text-muted" style="font-size: 0.7rem;">Citizen Account</span>
+                    </div>
+                </div>
+                <a href="/pages/login.html" class="btn btn-secondary" style="font-size: 0.85rem;">
+                    🏛️ Government Admin Portal
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN WINDOW -->
+        <div class="main-content">
+            
+            <header class="app-header">
+                <div>
+                    <h2 style="font-size: 1.25rem;">Report Incident</h2>
+                    <span class="text-muted" style="font-size: 0.8rem;">Submit structured local alerts to trigger AI routing and civic response.</span>
+                </div>
+                <button id="mobile-menu-toggle" class="btn btn-secondary" style="padding: 0.5rem; display: none;">☰</button>
+            </header>
+
+            <div class="content-body">
+                
+                <div class="report-grid">
+                    
+                    <!-- Left: Input Form Card -->
+                    <div class="card" id="form-container">
+                        <h3 class="card-title">🚨 Incident Ingestion Form</h3>
+                        
+                        <div class="form-group">
+                            <label>Incident Title</label>
+                            <input type="text" id="report-title" class="form-control" placeholder="Brief summary (e.g. Major Waterlogging at Adyar Bridge)...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Detailed Description</label>
+                            <textarea id="report-description" class="form-control" style="min-height:120px; resize:none;" placeholder="Detail the event. State numbers, active risks, and coordinates if known..."></textarea>
+                        </div>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="report-category" class="form-control">
+                                    <option value="Flood">Flood / Drainage</option>
+                                    <option value="Accident">Road / Traffic Accident</option>
+                                    <option value="Rain">Monsoon Weather</option>
+                                    <option value="Outage">Power Outage</option>
+                                    <option value="Epidemic">Health / Sickness Outbreak</option>
+                                    <option value="Fire">Thermal / Fire Outbreak</option>
+                                    <option value="Other">Other Issues</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Specific Location</label>
+                                <input type="text" id="report-location" class="form-control" placeholder="e.g. Anna Nagar West, Chennai...">
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                            <div class="form-group">
+                                <label>Report Severity</label>
+                                <select id="report-severity" class="form-control">
+                                    <option value="low">Low Severity</option>
+                                    <option value="medium">Medium Severity</option>
+                                    <option value="high">High Severity</option>
+                                    <option value="critical">Critical (Immediate Rescue Needed)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Mock Image Upload</label>
+                                <select id="report-image" class="form-control">
+                                    <option value="">No Image</option>
+                                    <option value="/assets/images/flood.jpg">Flood photo</option>
+                                    <option value="/assets/images/accident.jpg">Accident photo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="btn-submit-report" class="btn btn-primary full-width" style="margin-top:1rem;">
+                            Submit Report
+                        </button>
+                    </div>
+
+                    <!-- Right: Ingestion status and visual AI timeline -->
+                    <div class="card timeline-box" id="tracker-container">
+                        <h3 class="card-title">📡 Active Routing Timeline</h3>
+                        <p class="text-muted" style="font-size:0.8rem; margin-bottom:1.5rem;">Follow the progress of your submitted report in real time.</p>
+                        
+                        <div class="timeline">
+                            <div class="timeline-item" id="track-stage-1">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <h4>1. Report Ingested</h4>
+                                    <p class="text-muted" id="time-stage-1">Waiting...</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item" id="track-stage-2">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <h4>2. AI Assessment & Mapping</h4>
+                                    <p class="text-muted" id="time-stage-2">Waiting...</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item" id="track-stage-3">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <h4>3. Department Assigned</h4>
+                                    <p class="text-muted" id="time-stage-3">Waiting...</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item" id="track-stage-4">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <h4>4. Under Verification Review</h4>
+                                    <p class="text-muted" id="time-stage-4">Waiting...</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item" id="track-stage-5">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <h4>5. Official Response Published</h4>
+                                    <p class="text-muted" id="time-stage-5">Waiting...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tracker-summary-card" style="display:none; padding:1rem; margin-top:2.5rem; background:rgba(0,112,243,0.05); border-radius:var(--border-radius); font-size:0.85rem;">
+                            <strong>AI Assessment Recommendation:</strong><br>
+                            <span id="tracker-ai-text">Analysing...</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/websocket.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/report.js"></script>
+</body>
+</html>
