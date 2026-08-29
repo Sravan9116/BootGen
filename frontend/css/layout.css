@@ -145,4 +145,5 @@
     gap: 1.5rem;
     height: 100%;
     overflow-y: auto;
+    min-height: 0;
 }
