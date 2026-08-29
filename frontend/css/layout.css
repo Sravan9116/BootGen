@@ -124,11 +124,26 @@
     flex: 1;
 }
 
+/* Layout locking helper for dashboard rooms with internal columns (Verification Workspace) */
+.lock-layout .main-content {
+    overflow: hidden;
+}
+
+.lock-layout .content-body {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: calc(100vh - var(--navbar-height));
+}
+
 /* 3. Three-Column Social Media Feed Layout */
 .feed-layout {
     display: grid;
     grid-template-columns: 1fr 350px;
     gap: 2rem;
+    overflow-y: auto;
+    flex: 1;
 }
 
 /* 4. Split-Screen Government Verification Workspace Layout */
@@ -136,7 +151,9 @@
     display: grid;
     grid-template-columns: 1fr 1.2fr 1fr;
     gap: 1.5rem;
-    height: calc(100vh - var(--navbar-height) - 4rem);
+    flex: 1;
+    min-height: 0;
+    height: 100%;
 }
 
 .workspace-col {
